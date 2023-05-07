@@ -22,9 +22,9 @@ BIMS Onboarding Records
 @stop
 
 @section('page_title_buttons')
-<a id="btn-new-mdl-bIMSRecord-modal" class="btn btn-sm btn-primary btn-new-mdl-bIMSRecord-modal">
+{{-- <a id="btn-new-mdl-bIMSRecord-modal" class="btn btn-sm btn-primary btn-new-mdl-bIMSRecord-modal">
     <i class="bx bx-book-add me-1"></i>New BIMS Record
-</a>
+</a> --}}
 <a href="{{route('bims-onboarding.BIMSRecords.index')}}" class="btn btn-sm btn-primary bg-olive mx-1" title="Search">
     <i class="bx bx-search"></i> Search BIMS Records
 </a>
@@ -98,15 +98,15 @@ BIMS Onboarding Records
 
             <div class="col text-center my-3">  
                 <div class="btn-group">
-                    <a id="btn-mdl-bulk-upload-bIMSRecord-modal" class="p-2 mx-1 btn btn-sm btn-primary btn-mdl-bulk-upload-bIMSRecord-modal" tabindex="-1" role="dialog" aria-modal="true" aria-hidden="true">
+                    <a id="btn-mdl-bulk-upload-bIMSRecord-modal" class="p-2 mx-1 btn btn-sm btn-primary btn-mdl-bulk-upload-bIMSRecord-modal" tabindex="-1" data-val-rtype="academic" role="dialog" aria-modal="true" aria-hidden="true">
                         <i class="bx bx-upload"></i> Upload Academic Staff
                     </a>
 
-                    <a id="btn-mdl-bulk-upload-bIMSRecord-modal" class="p-2 mx-1 btn btn-sm btn-primary btn-mdl-bulk-upload-bIMSRecord-modal" tabindex="-1" role="dialog" aria-modal="true" aria-hidden="true">
+                    <a id="btn-mdl-bulk-upload-bIMSRecord-modal" class="p-2 mx-1 btn btn-sm btn-primary btn-mdl-bulk-upload-bIMSRecord-modal" tabindex="-1" data-val-rtype="non-academic" role="dialog" aria-modal="true" aria-hidden="true">
                         <i class="bx bx-upload"></i> Upload Non Academic Staff
                     </a>
 
-                    <a id="btn-mdl-bulk-upload-bIMSRecord-modal" class="p-2 mx-1 btn btn-sm btn-primary btn-mdl-bulk-upload-bIMSRecord-modal" tabindex="-1" role="dialog" aria-modal="true" aria-hidden="true">
+                    <a id="btn-mdl-bulk-upload-bIMSRecord-modal" class="p-2 mx-1 btn btn-sm btn-primary btn-mdl-bulk-upload-bIMSRecord-modal" tabindex="-1" data-val-rtype="student" role="dialog" aria-modal="true" aria-hidden="true">
                         <i class="bx bx-upload"></i> Upload Students
                     </a>
                 </div>

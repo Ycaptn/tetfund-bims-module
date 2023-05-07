@@ -30,7 +30,6 @@ class BIMSRecordController extends BaseController
 
     public function index(Organization $org, BIMSRecordDataTable $bIMSRecordDataTable)
     {
-        $this->preloadData();
         $current_user = Auth()->user();
         $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
 
@@ -73,32 +72,6 @@ class BIMSRecordController extends BaseController
                     ->with('beneficiary', optional($beneficiary_member)->beneficiary)
                     ->with('months_list', BaseController::monthsList())
                     ->with('states_list', BaseController::statesList());
-    }
-
-    private function preloadData(){
-        if (BIMSRecord::count()==0){
-
-            $current_user = Auth()->user();
-            $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
-
-            for($idx=1;$idx<10;$idx++){
-                BIMSRecord::create([
-                    'organization_id'=>$current_user->organization_id,
-                    'beneficiary_id'=>$beneficiary_member->beneficiary_id,
-                    'first_name_imported'=>"First{$idx}",
-                    'middle_name_imported'=>"Middle{$idx}",
-                    'last_name_imported'=>"Last{$idx}",
-                    'matric_number_imported'=>"MAT/899/{$idx}",
-                    'staff_number_imported'=>"STF/899/{$idx}",
-                    'email_imported'=>"first{$idx}@student.edu.ng",
-                    'phone_imported'=>"0708152147{$idx}",
-                    'bvn_imported'=>"10708152147{$idx}",
-                    'nin_imported'=>"80708152147{$idx}",
-                    'dob_imported'=>"{$idx}/1/198{$idx}",
-                    'user_status' => 'new-import',
-                ]);
-            }
-        }
     }
 
     public function create(Organization $org)
@@ -239,12 +212,12 @@ class BIMSRecordController extends BaseController
                 //if the matric number exists, or if the phone exists, and if the email address exists
                 if (BIMSRecord::where('email_imported',$email)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0 || 
                     BIMSRecord::where('phone_imported',$valid_telephone)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0 || 
-                    BIMSRecord::where('staff_number_imported',$staff_code)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0 || 
-                    BIMSRecord::where('matric_number_imported',$matric_code)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0 || 
+                    (str_contains($request->user_type,"academic") && BIMSRecord::where('staff_number_imported',$staff_code)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0) || 
+                    (str_contains($request->user_type,"student") && BIMSRecord::where('matric_number_imported',$matric_code)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0) || 
                     BIMSRecord::where('email_verified',$email)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0 || 
                     BIMSRecord::where('phone_verified',$valid_telephone)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0 || 
-                    BIMSRecord::where('staff_number_verified',$staff_code)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0 || 
-                    BIMSRecord::where('matric_number_verified',$matric_code)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0){
+                    (str_contains($request->user_type,"academic") && BIMSRecord::where('staff_number_verified',$staff_code)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0) || 
+                    (str_contains($request->user_type,"student") && BIMSRecord::where('matric_number_verified',$matric_code)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0)){
 
                     //duplicate record detected.
                     //$errors []= "Duplicate record detected for {$first_name} {$middle_name} {$last_name} {$email} {$valid_telephone}";
@@ -258,11 +231,12 @@ class BIMSRecordController extends BaseController
                         'first_name_imported'=>$first_name,
                         'middle_name_imported'=>$middle_name,
                         'last_name_imported'=>$last_name,
-                        'matric_number_imported'=>$matric_code,
-                        'staff_number_imported'=>$staff_code,
-                        'email_imported'=>$email,
                         'phone_imported'=>$valid_telephone,
+                        'email_imported'=>$email,
+                        'staff_number_imported' => (str_contains($request->user_type,"academic") ? $staff_code : null),
+                        'matric_number_imported' => (str_contains($request->user_type,"student") ? $matric_code : null),
                         'user_status' => 'new-import',
+                        'user_type' => $request->user_type,
                     ]);
 
                     $created_records++;

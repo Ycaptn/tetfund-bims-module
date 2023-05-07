@@ -31,9 +31,9 @@
                 @endphp
                 <p class="card-text">
                     @if ($data_item->is_verified == false)
-                    <a href='{{$detail_page_url}}'>{{ $data_item->email_imported }} <br/> {{$data_item->phone_imported}}</a>
+                        {{ $data_item->email_imported }} <br/> {{$data_item->phone_imported}}
                     @else
-                    <a href='{{$detail_page_url}}'>{{ $data_item->email_verified }} <br/> {{$data_item->phone_verified}} - <b>{{$data_item->phone_network_verified}}</b></a>
+                        {{ $data_item->email_verified }} <br/> {{$data_item->phone_verified}} - <b>{{$data_item->phone_network_verified}}</b>
                     @endif
                 </p>
             </div>

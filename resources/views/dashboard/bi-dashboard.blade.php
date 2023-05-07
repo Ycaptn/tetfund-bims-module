@@ -36,35 +36,51 @@ BIMS Identities Onboarding
                     <h5 class="card-title">
                         BIMS Statistics 
                     </h5>
+
+                    @php
+                        $total_count = \BIMSOnboarding::get_bims_records_count();
+                        $academic_staff_count = \BIMSOnboarding::get_bims_records_count('academic');
+                        $non_academic_staff_count = \BIMSOnboarding::get_bims_records_count('non-academic');
+                        $student_count = \BIMSOnboarding::get_bims_records_count('student');
+                        $others_count = \BIMSOnboarding::get_bims_records_count('other');
+                        $verified_count = \BIMSOnboarding::get_bims_records_count(null,null,1);
+
+                        $academic_staff_pct = ($total_count>0) ? 100*($academic_staff_count/$total_count) : 0;
+                        $non_academic_staff_pct = ($total_count>0) ? 100*($non_academic_staff_count/$total_count) : 0;
+                        $student_pct = ($total_count>0) ? 100*($student_count/$total_count) : 0;
+                        $others_pct = ($total_count>0) ? 100*($others_count/$total_count) : 0;
+                        $verified_pct = ($total_count>0) ? 100*($verified_count/$total_count) : 0;
+                    @endphp
+
                     <div class="mt-2">
                         <div class="progress-wrapper mb-3">
-                            <p class="mb-1">Academic Staff <span class="float-end fw-bold">8,475</span></p>
+                            <p class="mb-1">Academic Staff <span class="float-end fw-bold">{{number_format($academic_staff_count,0)}}</span></p>
                             <div class="progress rounded-0" style="height: 8px;">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: 80%;"></div>
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{$academic_staff_pct}}%;"></div>
                             </div>
                         </div>
                         <div class="progress-wrapper mb-3">
-                            <p class="mb-1">Non Academic Staff <span class="float-end fw-bold">7,989</span></p>
+                            <p class="mb-1">Non Academic Staff <span class="float-end fw-bold">{{number_format($non_academic_staff_count,0)}}</span></p>
                             <div class="progress rounded-0" style="height: 8px;">
-                                <div class="progress-bar bg-pink" role="progressbar" style="width: 65%;"></div>
+                                <div class="progress-bar bg-pink" role="progressbar" style="width: {{$non_academic_staff_pct}}%;"></div>
                             </div>
                         </div>
                         <div class="progress-wrapper mb-3">
-                            <p class="mb-1">Students <span class="float-end fw-bold">6,359</span></p>
+                            <p class="mb-1">Students <span class="float-end fw-bold">{{number_format($student_count,0)}}</span></p>
                             <div class="progress rounded-0" style="height: 8px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 50%;"></div>
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{$student_pct}}%;"></div>
                             </div>
                         </div>
                         <div class="progress-wrapper mb-3">
-                            <p class="mb-1">Others <span class="float-end fw-bold">7,989</span></p>
+                            <p class="mb-1">Others <span class="float-end fw-bold">{{number_format($others_count,0)}}</span></p>
                             <div class="progress rounded-0" style="height: 8px;">
-                                <div class="progress-bar bg-pink" role="progressbar" style="width: 15%;"></div>
+                                <div class="progress-bar bg-pink" role="progressbar" style="width: {{$others_pct}}%;"></div>
                             </div>
                         </div>
                         <div class="progress-wrapper mb-3">
-                            <p class="mb-1">Verified Records <span class="float-end fw-bold">50%</span></p>
+                            <p class="mb-1">Verified Records <span class="float-end fw-bold">{{number_format($verified_count,0)}}%</span></p>
                             <div class="progress rounded-0" style="height: 8px;">
-                                <div class="progress-bar bg-danger" role="progressbar" style="width: 50%;"></div>
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: {{$verified_pct}}%;"></div>
                             </div>
                         </div>
                     </div>

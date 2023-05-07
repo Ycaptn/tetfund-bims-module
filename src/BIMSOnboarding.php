@@ -5,6 +5,11 @@ use Carbon;
 use Session;
 use Validator;
 
+use App\Models\Beneficiary;
+use App\Models\BeneficiaryMember;
+
+use TETFund\BIMSOnboarding\Models\BIMSRecord;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +25,31 @@ use Hasob\FoundationCore\Models\User;
 class BIMSOnboarding
 {
 
+    public function get_bims_records_count($user_type=null, $beneficiary_id=null, $verified=null){
+
+        $current_user = Auth::user();
+        $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
+
+        $query = BIMSRecord::where('deleted_at',null)->where('organization_id',$current_user->organization_id);
+
+        if ($user_type!=null){
+            $query = $query->where('user_type', $user_type);
+        }
+        if ($beneficiary_id!=null){
+            $query = $query->where('beneficiary_id', $beneficiary_id);
+        }else{
+            if ($beneficiary_member!=null){
+                $query = $query->where('beneficiary_id', $beneficiary_member->beneficiary_id);
+            }
+        }
+
+        if ($verified!=null){
+            $query = $query->where('is_verified', $verified);
+        }
+
+        return $query->count();
+    }
+
     public function get_menu_map(){
 
         $current_user = Auth::user();
@@ -31,6 +61,8 @@ class BIMSOnboarding
                 
                 $fc_menu = [];
 
+                if ($current_user->hasAnyRole(['admin','BI-desk-officer','BI-ict','BI-head-of-institution'])){
+
                     $fc_menu['mnu_bims_dashboard'] = [
                         'id'=>'mnu_bims_dashboard',
                         'label'=>'BIMS Onboarding',
@@ -41,27 +73,29 @@ class BIMSOnboarding
                         'children' => []
                     ];
 
-                    $fc_menu['mnu_bims_dashboard']['children']["mnu_bims_dashboard_ids"] = [
-                        'id'=>"mnu_bims_dashboard_ids",
-                        'label'=>"Identities",
-                        'icon'=>'bx bx-right-arrow-alt',
-                        'path'=> route('bims-onboarding.bi-dashboard'),
-                        'route-selector'=>'bims-onboarding/bi*',
-                        'is-parent'=>false,
-                        'children' => []
-                    ];
+                    if ($current_user->hasAnyRole(['BI-desk-officer','BI-ict','BI-head-of-institution'])){
+                        $fc_menu['mnu_bims_dashboard']['children']["mnu_bims_dashboard_ids"] = [
+                            'id'=>"mnu_bims_dashboard_ids",
+                            'label'=>"Identities",
+                            'icon'=>'bx bx-right-arrow-alt',
+                            'path'=> route('bims-onboarding.bi-dashboard'),
+                            'route-selector'=>'bims-onboarding/bi*',
+                            'is-parent'=>false,
+                            'children' => []
+                        ];
+                    }
 
-                    $fc_menu['mnu_bims_dashboard']['children']["mnu_bims_dashboard_admin"] = [
-                        'id'=>"mnu_bims_dashboard_admin",
-                        'label'=>"BIMS Management",
-                        'icon'=>'bx bx-right-arrow-alt',
-                        'path'=> route('bims-onboarding.admin-dashboard'),
-                        'route-selector'=>'bims-onboarding/admin*',
-                        'is-parent'=>false,
-                        'children' => []
-                    ];
-
-                if ($current_user->hasAnyRole(['admin','',''])){
+                    if ($current_user->hasAnyRole(['admin'])){
+                        $fc_menu['mnu_bims_dashboard']['children']["mnu_bims_dashboard_admin"] = [
+                            'id'=>"mnu_bims_dashboard_admin",
+                            'label'=>"BIMS Management",
+                            'icon'=>'bx bx-right-arrow-alt',
+                            'path'=> route('bims-onboarding.admin-dashboard'),
+                            'route-selector'=>'bims-onboarding/admin*',
+                            'is-parent'=>false,
+                            'children' => []
+                        ];
+                    }
                 }
 
                 return $fc_menu;

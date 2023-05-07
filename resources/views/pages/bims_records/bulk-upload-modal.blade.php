@@ -34,9 +34,8 @@
 
                                     <div id="div-value" class="form-group">
                                         <div class="col-sm-12">
-                                            
+                                            <input id="txt_BIMSRecordType" name="txt_BIMSRecordType" value="0" type="hidden" />
                                             {!! Form::file('mdl-bulk-upload-bIMSRecord-modal-file', ['class' => 'form-control', 'id'=>'mdl-bulk-upload-bIMSRecord-modal-file']) !!}
-
                                         </div>
                                     </div>
 
@@ -68,6 +67,8 @@ $(document).ready(function() {
         $('#mdl-bulk-upload-bIMSRecord-modal').modal('show');
         $('#frm-bIMSRecord-modal-bku').trigger("reset");
 
+        $('#txt_BIMSRecordType').val($(this).attr('data-val-rtype'));
+
         $("#spinner-mdl-bulk-upload-bIMSRecord-modal").hide();
         $("#btn-upload-mdl-bIMSRecord-modal").attr('disabled', false);
     });
@@ -94,6 +95,7 @@ $(document).ready(function() {
         let formData = new FormData();
         formData.append('_token', $('input[name="_token"]').val());        
         formData.append('_method', actionType);
+        formData.append('user_type', $('#txt_BIMSRecordType').val());
         formData.append('file', $('#mdl-bulk-upload-bIMSRecord-modal-file')[0].files[0]);
         @if (isset($organization) && $organization!=null)
             formData.append('organization_id', '{{$organization->id}}');
@@ -122,7 +124,7 @@ $(document).ready(function() {
                         $('#div-bIMSRecord-modal-error-bku').hide();
                         swal({
                                 title: "Saved",
-                                text: "Bulk Onboarding completed successfully",
+                                text: result.message, //"Bulk Onboarding completed successfully",
                                 type: "success",
                                 showCancelButton: false,
                                 closeOnConfirm: false,
@@ -130,7 +132,8 @@ $(document).ready(function() {
                                 confirmButtonText: "OK",
                                 closeOnConfirm: false
                             },function(){
-                                location.reload(true);
+                                //location.reload(true);
+                                location.href = "{{route('bims-onboarding.BIMSRecords.index')}}";
                         });
 
                     },20);
