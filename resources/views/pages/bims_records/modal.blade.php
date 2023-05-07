@@ -27,14 +27,14 @@
                             <div id="div-show-txt-bIMSRecord-primary-id">
                                 <div class="row">
                                     <div class="col-lg-12">
-                                    @include('tetfund-bims-module::pages.b_i_m_s_records.show_fields')
+                                    @include('tetfund-bims-module::pages.bims_records.show_fields')
                                     </div>
                                 </div>
                             </div>
                             <div id="div-edit-txt-bIMSRecord-primary-id">
                                 <div class="row">
                                     <div class="col-lg-12">
-                                    @include('tetfund-bims-module::pages.b_i_m_s_records.fields')
+                                    @include('tetfund-bims-module::pages.bims_records.fields')
                                     </div>
                                 </div>
                             </div>
@@ -97,7 +97,7 @@ $(document).ready(function() {
         $('#div-edit-txt-bIMSRecord-primary-id').hide();
         let itemId = $(this).attr('data-val');
 
-        $.get( "{{ route('bims-onboarding-api.b_i_m_s_records.show','') }}/"+itemId).done(function( response ) {
+        $.get( "{{ route('bims-onboarding-api.bims_records.show','') }}/"+itemId).done(function( response ) {
 			
 			$('#txt-bIMSRecord-primary-id').val(response.data.id);
             		$('#spn_bIMSRecord_first_name_verified').html(response.data.first_name_verified);
@@ -155,7 +155,7 @@ $(document).ready(function() {
         $('#div-edit-txt-bIMSRecord-primary-id').show();
         let itemId = $(this).attr('data-val');
 
-        $.get( "{{ route('bims-onboarding-api.b_i_m_s_records.show','') }}/"+itemId).done(function( response ) {     
+        $.get( "{{ route('bims-onboarding-api.bims_records.show','') }}/"+itemId).done(function( response ) {     
 
 			$('#txt-bIMSRecord-primary-id').val(response.data.id);
             		$('#first_name_verified').val(response.data.first_name_verified);
@@ -232,7 +232,7 @@ $(document).ready(function() {
                         html: true
                     }) 
                                         
-                    let endPointUrl = "{{ route('bims-onboarding-api.b_i_m_s_records.destroy','') }}/"+itemId;
+                    let endPointUrl = "{{ route('bims-onboarding-api.bims_records.destroy','') }}/"+itemId;
 
                     let formData = new FormData();
                     formData.append('_token', $('input[name="_token"]').val());
@@ -286,7 +286,7 @@ $(document).ready(function() {
         $("#div-save-mdl-bIMSRecord-modal").attr('disabled', true);
 
         let actionType = "POST";
-        let endPointUrl = "{{ route('bims-onboarding-api.b_i_m_s_records.store') }}";
+        let endPointUrl = "{{ route('bims-onboarding-api.bims_records.store') }}";
         let primaryId = $('#txt-bIMSRecord-primary-id').val();
         
         let formData = new FormData();
@@ -294,7 +294,7 @@ $(document).ready(function() {
 
         if (primaryId != "0"){
             actionType = "PUT";
-            endPointUrl = "{{ route('bims-onboarding-api.b_i_m_s_records.update','') }}/"+primaryId;
+            endPointUrl = "{{ route('bims-onboarding-api.bims_records.update','') }}/"+primaryId;
             formData.append('id', primaryId);
         }
         

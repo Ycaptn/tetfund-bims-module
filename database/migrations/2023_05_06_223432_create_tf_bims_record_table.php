@@ -49,6 +49,7 @@ class CreateTfBimsRecordTable extends Migration
             $table->string('user_status');
             $table->string('user_type')->nullable();
             $table->integer('display_ordinal')->default(0);
+            $table->boolean('is_verified')->default(0);
             $table->text('admin_entered_record_issues', 2000)->nullable();
             $table->text('admin_entered_record_notes', 2000)->nullable();
             $table->text('verification_meta_data', 2000)->nullable();

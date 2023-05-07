@@ -1,14 +1,12 @@
 
-<a id="btn-mdl-bulk-upload-bIMSRecord-modal" class="btn btn-primary btn-mdl-bulk-upload-bIMSRecord-modal" tabindex="-1" role="dialog" aria-modal="true" aria-hidden="true">
-    <i class="bx bx-upload"></i> Bulk Upload
-</a>
+
 
 <div class="modal fade" id="mdl-bulk-upload-bIMSRecord-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
 
             <div class="modal-header">
-                <h4 id="lbl-bIMSRecord-modal-title-bku" class="modal-title">Bulk Upload</h4>
+                <h4 id="lbl-bIMSRecord-modal-title-bku" class="modal-title">Bulk Onboarding</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
@@ -91,12 +89,12 @@ $(document).ready(function() {
         $("#btn-upload-mdl-bIMSRecord-modal").attr('disabled', true);
 
         let actionType = "POST";
-        let endPointUrl = "###### PATH TO UPLOAD #####";
+        let endPointUrl = "{{route('bims-onboarding.bi-import-processing')}}";
         
         let formData = new FormData();
         formData.append('_token', $('input[name="_token"]').val());        
         formData.append('_method', actionType);
-        formData.append('value', $('#value-file')[0].files[0]);
+        formData.append('file', $('#mdl-bulk-upload-bIMSRecord-modal-file')[0].files[0]);
         @if (isset($organization) && $organization!=null)
             formData.append('organization_id', '{{$organization->id}}');
         @endif
@@ -124,7 +122,7 @@ $(document).ready(function() {
                         $('#div-bIMSRecord-modal-error-bku').hide();
                         swal({
                                 title: "Saved",
-                                text: "Bulk upload completed successfully",
+                                text: "Bulk Onboarding completed successfully",
                                 type: "success",
                                 showCancelButton: false,
                                 closeOnConfirm: false,

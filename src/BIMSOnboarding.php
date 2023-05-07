@@ -41,6 +41,26 @@ class BIMSOnboarding
                         'children' => []
                     ];
 
+                    $fc_menu['mnu_bims_dashboard']['children']["mnu_bims_dashboard_ids"] = [
+                        'id'=>"mnu_bims_dashboard_ids",
+                        'label'=>"Identities",
+                        'icon'=>'bx bx-right-arrow-alt',
+                        'path'=> route('bims-onboarding.bi-dashboard'),
+                        'route-selector'=>'bims-onboarding/bi*',
+                        'is-parent'=>false,
+                        'children' => []
+                    ];
+
+                    $fc_menu['mnu_bims_dashboard']['children']["mnu_bims_dashboard_admin"] = [
+                        'id'=>"mnu_bims_dashboard_admin",
+                        'label'=>"BIMS Management",
+                        'icon'=>'bx bx-right-arrow-alt',
+                        'path'=> route('bims-onboarding.admin-dashboard'),
+                        'route-selector'=>'bims-onboarding/admin*',
+                        'is-parent'=>false,
+                        'children' => []
+                    ];
+
                 if ($current_user->hasAnyRole(['admin','',''])){
                 }
 
@@ -51,8 +71,8 @@ class BIMSOnboarding
     }
 
     public function api_routes(){
-
         Route::name('bims-onboarding-api.')->prefix('bims-onboarding-api')->group(function(){
+            Route::resource('bims_records', \TETFund\BIMSOnboarding\Controllers\API\BIMSRecordAPIController::class);
         });
     }
 
@@ -63,10 +83,15 @@ class BIMSOnboarding
     }
 
     public function routes(){
-
         Route::name('bims-onboarding.')->prefix('bims-onboarding')->group(function(){
-        });
+            Route::get('bi', [\TETFund\BIMSOnboarding\Controllers\Dashboard\DashboardController::class, 'displayBIDashboard'])->name('bi-dashboard');
+            Route::get('admin', [\TETFund\BIMSOnboarding\Controllers\Dashboard\DashboardController::class, 'displayAdminDashboard'])->name('admin-dashboard');
 
+            Route::get('bi-import', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'displayBIMSRecordOnboarding'])->name('bi-import');
+            Route::post('bi-import', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'processBulkUpload'])->name('bi-import-processing');
+            
+            Route::resource('BIMSRecords', \TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class);
+        });
     }
 
 

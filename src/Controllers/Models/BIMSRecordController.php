@@ -2,6 +2,9 @@
 
 namespace TETFund\BIMSOnboarding\Controllers\Models;
 
+use App\Models\Beneficiary;
+use App\Models\BeneficiaryMember;
+
 use TETFund\BIMSOnboarding\Models\BIMSRecord;
 
 use TETFund\BIMSOnboarding\Events\BIMSRecordCreated;
@@ -24,63 +27,85 @@ use Illuminate\Http\Response;
 
 class BIMSRecordController extends BaseController
 {
-    /**
-     * Display a listing of the BIMSRecord.
-     *
-     * @param BIMSRecordDataTable $bIMSRecordDataTable
-     * @return Response
-     */
+
     public function index(Organization $org, BIMSRecordDataTable $bIMSRecordDataTable)
     {
+        $this->preloadData();
         $current_user = Auth()->user();
+        $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
 
-        $cdv_b_i_m_s_records = new \Hasob\FoundationCore\View\Components\CardDataView(BIMSRecord::class, "tetfund-bims-module::pages.b_i_m_s_records.card_view_item");
-        $cdv_b_i_m_s_records->setDataQuery(['organization_id'=>$org->id])
-                        //->addDataGroup('label','field','value')
-                        //->setSearchFields(['field_to_search1','field_to_search2'])
-                        //->addDataOrder('display_ordinal','DESC')
-                        //->addDataOrder('id','DESC')
-                        ->enableSearch(true)
+        $cdv_bims_records = new \Hasob\FoundationCore\View\Components\CardDataView(BIMSRecord::class, "tetfund-bims-module::pages.bims_records.card_view_item");
+        $cdv_bims_records->setDataQuery(['organization_id'=>$org->id])
+                        ->addDataGroup('All','deleted_at',null)
+                        ->addDataGroup('Academic Staff','user_type','academic')
+                        ->addDataGroup('Non Academic','user_type','non-academic')
+                        ->addDataGroup('Student','user_type','student')
+                        ->addDataGroup('Others','user_type',null)
+                        ->addDataGroup('Verified','is_verified', '1')
+                        ->addDataGroup('Unverified','is_verified', '0')
+                        ->setSearchFields([
+                            "first_name_imported","middle_name_imported","last_name_imported","name_title_imported","name_suffix_imported","matric_number_imported","staff_number_imported","email_imported","phone_imported","phone_network_imported","bvn_imported","nin_imported",
+                            "first_name_verified","middle_name_verified","last_name_verified","name_title_verified","name_suffix_verified","matric_number_verified","staff_number_verified","email_verified","phone_verified","phone_network_verified","bvn_verified","nin_verified",
+                        ])->enableSearch(true)
                         ->enablePagination(true)
-                        ->setPaginationLimit(20)
-                        ->setSearchPlaceholder('Search BIMSRecord');
+                        ->setPaginationLimit(30)
+                        ->setSearchPlaceholder('Search BIMS Onboarding Records');
 
         if (request()->expectsJson()){
-            return $cdv_b_i_m_s_records->render();
+            return $cdv_bims_records->render();
         }
 
-        return view('tetfund-bims-module::pages.b_i_m_s_records.card_view_index')
+        return view('tetfund-bims-module::pages.bims_records.card_view_index')
                     ->with('current_user', $current_user)
+                    ->with('beneficiary', optional($beneficiary_member)->beneficiary)
                     ->with('months_list', BaseController::monthsList())
                     ->with('states_list', BaseController::statesList())
-                    ->with('cdv_b_i_m_s_records', $cdv_b_i_m_s_records);
-
-        /*
-        return $bIMSRecordDataTable->render('tetfund-bims-module::pages.b_i_m_s_records.index',[
-            'current_user'=>$current_user,
-            'months_list'=>BaseController::monthsList(),
-            'states_list'=>BaseController::statesList()
-        ]);
-        */
+                    ->with('cdv_bims_records', $cdv_bims_records);
     }
 
-    /**
-     * Show the form for creating a new BIMSRecord.
-     *
-     * @return Response
-     */
+    public function displayBIMSRecordOnboarding(Organization $org)
+    {
+        $current_user = Auth()->user();
+        $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
+
+        return view('tetfund-bims-module::pages.bims_records.onboard')
+                    ->with('current_user', $current_user)
+                    ->with('beneficiary', optional($beneficiary_member)->beneficiary)
+                    ->with('months_list', BaseController::monthsList())
+                    ->with('states_list', BaseController::statesList());
+    }
+
+    private function preloadData(){
+        if (BIMSRecord::count()==0){
+
+            $current_user = Auth()->user();
+            $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
+
+            for($idx=1;$idx<10;$idx++){
+                BIMSRecord::create([
+                    'organization_id'=>$current_user->organization_id,
+                    'beneficiary_id'=>$beneficiary_member->beneficiary_id,
+                    'first_name_imported'=>"First{$idx}",
+                    'middle_name_imported'=>"Middle{$idx}",
+                    'last_name_imported'=>"Last{$idx}",
+                    'matric_number_imported'=>"MAT/899/{$idx}",
+                    'staff_number_imported'=>"STF/899/{$idx}",
+                    'email_imported'=>"first{$idx}@student.edu.ng",
+                    'phone_imported'=>"0708152147{$idx}",
+                    'bvn_imported'=>"10708152147{$idx}",
+                    'nin_imported'=>"80708152147{$idx}",
+                    'dob_imported'=>"{$idx}/1/198{$idx}",
+                    'user_status' => 'new-import',
+                ]);
+            }
+        }
+    }
+
     public function create(Organization $org)
     {
-        return view('tetfund-bims-module::pages.b_i_m_s_records.create');
+        return view('tetfund-bims-module::pages.bims_records.create');
     }
 
-    /**
-     * Store a newly created BIMSRecord in storage.
-     *
-     * @param CreateBIMSRecordRequest $request
-     *
-     * @return Response
-     */
     public function store(Organization $org, CreateBIMSRecordRequest $request)
     {
         $input = $request->all();
@@ -92,13 +117,6 @@ class BIMSRecordController extends BaseController
         return redirect(route('bims-onboarding.bIMSRecords.index'));
     }
 
-    /**
-     * Display the specified BIMSRecord.
-     *
-     * @param  int $id
-     *
-     * @return Response
-     */
     public function show(Organization $org, $id)
     {
         $current_user = Auth()->user();
@@ -110,20 +128,13 @@ class BIMSRecordController extends BaseController
             return redirect(route('bims-onboarding.bIMSRecords.index'));
         }
 
-        return view('tetfund-bims-module::pages.b_i_m_s_records.show')
+        return view('tetfund-bims-module::pages.bims_records.show')
                             ->with('bIMSRecord', $bIMSRecord)
                             ->with('current_user', $current_user)
                             ->with('months_list', BaseController::monthsList())
                             ->with('states_list', BaseController::statesList());
     }
 
-    /**
-     * Show the form for editing the specified BIMSRecord.
-     *
-     * @param  int $id
-     *
-     * @return Response
-     */
     public function edit(Organization $org, $id)
     {
         $current_user = Auth()->user();
@@ -135,21 +146,13 @@ class BIMSRecordController extends BaseController
             return redirect(route('bims-onboarding.bIMSRecords.index'));
         }
 
-        return view('tetfund-bims-module::pages.b_i_m_s_records.edit')
+        return view('tetfund-bims-module::pages.bims_records.edit')
                             ->with('bIMSRecord', $bIMSRecord)
                             ->with('current_user', $current_user)
                             ->with('months_list', BaseController::monthsList())
                             ->with('states_list', BaseController::statesList());
     }
 
-    /**
-     * Update the specified BIMSRecord in storage.
-     *
-     * @param  int              $id
-     * @param UpdateBIMSRecordRequest $request
-     *
-     * @return Response
-     */
     public function update(Organization $org, $id, UpdateBIMSRecordRequest $request)
     {
         /** @var BIMSRecord $bIMSRecord */
@@ -166,15 +169,6 @@ class BIMSRecordController extends BaseController
         return redirect(route('bims-onboarding.bIMSRecords.index'));
     }
 
-    /**
-     * Remove the specified BIMSRecord from storage.
-     *
-     * @param  int $id
-     *
-     * @throws \Exception
-     *
-     * @return Response
-     */
     public function destroy(Organization $org, $id)
     {
         /** @var BIMSRecord $bIMSRecord */
@@ -189,43 +183,104 @@ class BIMSRecordController extends BaseController
         BIMSRecordDeleted::dispatch($bIMSRecord);
         return redirect(route('bims-onboarding.bIMSRecords.index'));
     }
-
         
     public function processBulkUpload(Organization $org, Request $request){
+
+        $current_user = Auth()->user();
+        $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
 
         $attachedFileName = time() . '.' . $request->file->getClientOriginalExtension();
         $request->file->move(public_path('uploads'), $attachedFileName);
         $path_to_file = public_path('uploads').'/'.$attachedFileName;
 
-        //Process each line
         $loop = 1;
+        $created_records = 0;
+        $duplicated_records = 0;
         $errors = [];
-        $lines = file($path_to_file);
 
-        if (count($lines) > 1) {
-            foreach ($lines as $line) {
+        //Process each line
+        if (($handle = fopen($path_to_file, "r")) !== FALSE) {
+            while (false !== ($data = fgetcsv($handle, 1024))) {
                 
-                if ($loop > 1) {
-                    $data = explode(',', $line);
-                    // if (count($invalids) > 0) {
-                    //     array_push($errors, $invalids);
-                    //     continue;
-                    // }else{
-                    //     //Check if line is valid
-                    //     if (!$valid) {
-                    //         $errors[] = $msg;
-                    //     }
-                    // }
+                $first_name = trim($data[0]);
+                $middle_name = trim($data[1]);
+                $last_name = trim($data[2]);
+                $email = strtolower(trim($data[3]));
+                $phone = trim($data[4]);
+                
+                $staff_code = trim($data[5]);
+                $matric_code = trim($data[5]);
+
+                $valid_email = null;
+                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $valid_email = $email;
                 }
+
+                $valid_telephone = null;
+                if (strlen($phone)==11){
+                    $valid_telephone=$phone;
+                }elseif (strlen($phone)>11){
+                    $phone_parts = explode(",",$phone);
+                    foreach($phone_parts as $phone_part){
+                        $phone_part = str_replace("+234","0",$phone_part);
+                        $phone_part = str_replace("+234(0)","0",$phone_part);
+                        $phone_part = str_replace("+234-(0)","0",$phone_part);
+                        $phone_part = str_replace("-","",$phone_part);
+                        $phone_part = str_replace(" ","",$phone_part);
+
+                        if (strlen($phone_part)==11){
+                            $valid_telephone=$phone_part;
+                            break;
+                        }
+                    }
+                }
+
+                //Check if the record is being duplicated
+                //if the matric number exists, or if the phone exists, and if the email address exists
+                if (BIMSRecord::where('email_imported',$email)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0 || 
+                    BIMSRecord::where('phone_imported',$valid_telephone)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0 || 
+                    BIMSRecord::where('staff_number_imported',$staff_code)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0 || 
+                    BIMSRecord::where('matric_number_imported',$matric_code)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0 || 
+                    BIMSRecord::where('email_verified',$email)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0 || 
+                    BIMSRecord::where('phone_verified',$valid_telephone)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0 || 
+                    BIMSRecord::where('staff_number_verified',$staff_code)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0 || 
+                    BIMSRecord::where('matric_number_verified',$matric_code)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0){
+
+                    //duplicate record detected.
+                    //$errors []= "Duplicate record detected for {$first_name} {$middle_name} {$last_name} {$email} {$valid_telephone}";
+                    $duplicated_records++;
+
+                } else {
+
+                    BIMSRecord::create([
+                        'organization_id'=>$current_user->organization_id,
+                        'beneficiary_id'=>$beneficiary_member->beneficiary_id,
+                        'first_name_imported'=>$first_name,
+                        'middle_name_imported'=>$middle_name,
+                        'last_name_imported'=>$last_name,
+                        'matric_number_imported'=>$matric_code,
+                        'staff_number_imported'=>$staff_code,
+                        'email_imported'=>$email,
+                        'phone_imported'=>$valid_telephone,
+                        'user_status' => 'new-import',
+                    ]);
+
+                    $created_records++;
+                }
+
+                //Save the record.
                 $loop++;
             }
-        }else{
-            $errors[] = 'The uploaded csv file is empty';
+        } else {
+            $errors[] = 'The uploaded file is empty';
         }
         
         if (count($errors) > 0) {
             return $this->sendError($this->array_flatten($errors), 'Errors processing file');
         }
-        return $this->sendResponse($subject->toArray(), 'Bulk upload completed successfully');
+        return $this->sendResponse(
+            $created_records, 
+            "Bulk Onboarding completed successfully - {$created_records} new records saved, {$duplicated_records} duplicate records."
+        );
     }
 }
