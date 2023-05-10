@@ -43,8 +43,9 @@ class BIMSRecordReportDataTable extends DataTable
     public function query(BIMSRecord $model)
     {
         return $model::select('id','beneficiary_id',
-        \DB::raw('SUM(CASE WHEN `user_type` = \'non-academic\' THEN 1 ELSE 0 END) AS "Staffs"'),
-        \DB::raw('SUM(CASE WHEN `user_type` = \'student\' THEN 1 ELSE 0 END) AS "Students"'),
+        \DB::raw('SUM(CASE WHEN `user_type` = \'academin-staff\' THEN 1 ELSE 0 END) AS "Academic Staff"'),
+        \DB::raw('SUM(CASE WHEN `user_type` = \'non-academic\' THEN 1 ELSE 0 END) AS "Non Academic"'),
+        \DB::raw('SUM(CASE WHEN `user_type` = \'student\' THEN 1 ELSE 0 END) AS "Student"'),
         \DB::raw('SUM(CASE WHEN `is_verified` = \'0\' THEN 1 ELSE 0 END) AS "Unverified"'),
         \DB::raw('SUM(CASE WHEN `is_verified` = \'1\' THEN 1 ELSE 0 END) AS "Verified"'),
         \DB::raw('Count(id) AS "Total Records"')
@@ -83,8 +84,9 @@ class BIMSRecordReportDataTable extends DataTable
         return [
             Column::make('DT_RowIndex')->title('Sn.')->searchable(false),
             Column::make('Institution'),
-            Column::make('Staffs')->searchable(false),
-            Column::make('Students')->searchable(false),
+            Column::make('Academic Staff')->searchable(false),
+            Column::make('Non Academic')->searchable(false),
+            Column::make('Student')->searchable(false),
             Column::make('Unverified')->searchable(false),
             Column::make('Verified')->searchable(false),
             Column::make('Total Records')->searchable(false),
