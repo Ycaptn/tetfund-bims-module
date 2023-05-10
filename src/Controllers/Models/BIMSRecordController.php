@@ -15,6 +15,7 @@ use TETFund\BIMSOnboarding\Requests\CreateBIMSRecordRequest;
 use TETFund\BIMSOnboarding\Requests\UpdateBIMSRecordRequest;
 
 use TETFund\BIMSOnboarding\DataTables\BIMSRecordDataTable;
+use TETFund\BIMSOnboarding\DataTables\BIMSRecordReportDataTable;
 
 use Hasob\FoundationCore\Controllers\BaseController;
 use Hasob\FoundationCore\Models\Organization;
@@ -87,7 +88,7 @@ class BIMSRecordController extends BaseController
         $bIMSRecord = BIMSRecord::create($input);
 
         BIMSRecordCreated::dispatch($bIMSRecord);
-        return redirect(route('bims-onboarding.bIMSRecords.index'));
+        return redirect(route('bims-onboarding.BIMSRecords.index'));
     }
 
     public function show(Organization $org, $id)
@@ -98,7 +99,7 @@ class BIMSRecordController extends BaseController
         $bIMSRecord = BIMSRecord::find($id);
 
         if (empty($bIMSRecord)) {
-            return redirect(route('bims-onboarding.bIMSRecords.index'));
+            return redirect(route('bims-onboarding.BIMSRecords.index'));
         }
 
         return view('tetfund-bims-module::pages.bims_records.show')
@@ -116,7 +117,7 @@ class BIMSRecordController extends BaseController
         $bIMSRecord = BIMSRecord::find($id);
 
         if (empty($bIMSRecord)) {
-            return redirect(route('bims-onboarding.bIMSRecords.index'));
+            return redirect(route('bims-onboarding.BIMSRecords.index'));
         }
 
         return view('tetfund-bims-module::pages.bims_records.edit')
@@ -132,14 +133,14 @@ class BIMSRecordController extends BaseController
         $bIMSRecord = BIMSRecord::find($id);
 
         if (empty($bIMSRecord)) {
-            return redirect(route('bims-onboarding.bIMSRecords.index'));
+            return redirect(route('bims-onboarding.BIMSRecords.index'));
         }
 
         $bIMSRecord->fill($request->all());
         $bIMSRecord->save();
         
         BIMSRecordUpdated::dispatch($bIMSRecord);
-        return redirect(route('bims-onboarding.bIMSRecords.index'));
+        return redirect(route('bims-onboarding.BIMSRecords.index'));
     }
 
     public function destroy(Organization $org, $id)
@@ -148,13 +149,13 @@ class BIMSRecordController extends BaseController
         $bIMSRecord = BIMSRecord::find($id);
 
         if (empty($bIMSRecord)) {
-            return redirect(route('bims-onboarding.bIMSRecords.index'));
+            return redirect(route('bims-onboarding.BIMSRecords.index'));
         }
 
         $bIMSRecord->delete();
 
         BIMSRecordDeleted::dispatch($bIMSRecord);
-        return redirect(route('bims-onboarding.bIMSRecords.index'));
+        return redirect(route('bims-onboarding.BIMSRecords.index'));
     }
         
     public function processBulkUpload(Organization $org, Request $request){
@@ -257,4 +258,17 @@ class BIMSRecordController extends BaseController
             "Bulk Onboarding completed successfully - {$created_records} new records saved, {$duplicated_records} duplicate records."
         );
     }
+
+    /**
+     * Display a listing of the BIMRecords report.
+     *
+     * @param \TETFund\ThesisDigitization\DataTables\BIMSRecordReportDataTable $beneficiaryRerportDataTable
+     * @return Response
+     */
+    public function report(Organization $org, BIMSRecordReportDataTable $BIMSRecordReportDataTable)
+    {   
+
+        return $BIMSRecordReportDataTable->render('tetfund-bims-module::pages.bims_records.report');
+    }
+ 
 }

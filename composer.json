@@ -37,7 +37,7 @@
         "symfony/debug": "^4.3|^5",
         "symfony/finder": "^4.3|^5",
         "yajra/laravel-datatables": "1.5",
-        "hasob/hasob-foundation-core": "dev-master"
+        "hasob/hasob-foundation-core-bs-5": "dev-bs-5"
     },
     "require-dev": {
         "laravel/legacy-factories": "^1.3",

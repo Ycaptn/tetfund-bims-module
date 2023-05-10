@@ -66,7 +66,7 @@ class BIMSOnboarding
                     $fc_menu['mnu_bims_dashboard'] = [
                         'id'=>'mnu_bims_dashboard',
                         'label'=>'BIMS Onboarding',
-                        'icon'=>'bx bx-user-plus',
+                        'icon'=>'bx bx-group',
                         'path'=> '',
                         'route-selector'=>'#',
                         'is-parent'=>true,
@@ -89,11 +89,21 @@ class BIMSOnboarding
                         $fc_menu['mnu_bims_dashboard']['children']["mnu_bims_dashboard_admin"] = [
                             'id'=>"mnu_bims_dashboard_admin",
                             'label'=>"BIMS Management",
-                            'icon'=>'bx bx-right-arrow-alt',
+                            'icon'=>'bx bx-briefcase',
                             'path'=> route('bims-onboarding.admin-dashboard'),
                             'route-selector'=>'bims-onboarding/admin*',
                             'is-parent'=>false,
-                            'children' => []
+                            'children' => [
+                                'mnu_td_bim_record_report' => [
+                                    'id'=>'mnu_td_bim_record_report',
+                                    'label'=>'BIMS Record Report',
+                                    'icon'=>'bx bx-right-arrow-alt',
+                                    'path'=> route('bims-onboarding.BIMSRecords.report'),
+                                    'route-selector'=>'bims-onboarding/BIMSRecords/report*',
+                                    'is-parent'=>false,
+                                    'children' => []
+                                ],
+                            ]
                         ];
                     }
                 }
@@ -124,6 +134,8 @@ class BIMSOnboarding
             Route::get('bi-import', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'displayBIMSRecordOnboarding'])->name('bi-import');
             Route::post('bi-import', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'processBulkUpload'])->name('bi-import-processing');
             
+            Route::get('BIMSRecords/report', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'report'])->name('BIMSRecords.report');
+
             Route::resource('BIMSRecords', \TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class);
         });
     }

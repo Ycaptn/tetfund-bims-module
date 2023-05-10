@@ -166,11 +166,11 @@ class BIMSRecord extends Model
 
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
     public function beneficiary()
     {
-        return $this->hasOne(\TETFund\BIMSOnboarding\Models\Beneficiary::class, 'id', 'beneficiary_id');
+        return $this->belongsTo(\App\Models\Beneficiary::class, 'beneficiary_id');
     }
 
 }
