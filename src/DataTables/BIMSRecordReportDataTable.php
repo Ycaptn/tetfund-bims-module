@@ -43,7 +43,7 @@ class BIMSRecordReportDataTable extends DataTable
     public function query(BIMSRecord $model)
     {
         return $model::select('id','beneficiary_id',
-        \DB::raw('SUM(CASE WHEN `user_type` = \'academin-staff\' THEN 1 ELSE 0 END) AS "Academic Staff"'),
+        \DB::raw('SUM(CASE WHEN `user_type` = \'academic\' THEN 1 ELSE 0 END) AS "Academic Staff"'),
         \DB::raw('SUM(CASE WHEN `user_type` = \'non-academic\' THEN 1 ELSE 0 END) AS "Non Academic"'),
         \DB::raw('SUM(CASE WHEN `user_type` = \'student\' THEN 1 ELSE 0 END) AS "Student"'),
         \DB::raw('SUM(CASE WHEN `user_type` = \'other\' THEN 1 ELSE 0 END) AS "Other"'),
