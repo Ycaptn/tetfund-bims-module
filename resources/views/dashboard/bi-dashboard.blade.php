@@ -23,7 +23,7 @@ BIMS Identities Onboarding
 
     <div class="card border-0 border-success border-start border-4">
         <div class="card-body">
-            BIMS (<b>Beneficiary Identity Management System</b>) is an identity management system utilized by TETFund to manage and administer various services offered to the staff and students of beneficiary institutions. 
+            BIMS (<b>Beneficiary Identity Management Service</b>) is an identity management system utilized by TETFund to manage and administer various services offered to the staff and students of beneficiary institutions. 
             You can use the <b>BIMS Onboarding</b> functionality to manage which members of your institution can access services rendered by TETFund to your institution such as free mobile internet data, and access to research and journal subscriptions, etc.
         </div>
     </div>

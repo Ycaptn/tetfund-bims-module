@@ -50,6 +50,10 @@ class BIMSOnboarding
         return $query->count();
     }
 
+    public function get_beneficiaries_on_bims(){
+        return BIMSRecord::select('beneficiary_id')->distinct()->get();
+    }
+
     public function get_menu_map(){
 
         $current_user = Auth::user();
@@ -139,6 +143,5 @@ class BIMSOnboarding
             Route::resource('BIMSRecords', \TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class);
         });
     }
-
 
 }
