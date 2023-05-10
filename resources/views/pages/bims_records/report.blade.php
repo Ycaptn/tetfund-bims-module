@@ -8,15 +8,15 @@ $hide_right_panel = true;
 @stop
 
 @section('title_postfix')
-All B I M S Record Report
+BIMS Onboarding Report
 @stop
 
 @section('page_title')
-B I M S Record Report
+BIMS Onboarding Report
 @stop
 
 @section('page_title_suffix')
-All B I M S Record Report
+All Beneficiaries
 @stop
 
 @section('page_title_subtext')
