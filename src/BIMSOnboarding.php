@@ -97,17 +97,16 @@ class BIMSOnboarding
                             'path'=> route('bims-onboarding.admin-dashboard'),
                             'route-selector'=>'bims-onboarding/admin*',
                             'is-parent'=>false,
-                            'children' => [
-                                'mnu_td_bim_record_report' => [
-                                    'id'=>'mnu_td_bim_record_report',
-                                    'label'=>'BIMS Record Report',
-                                    'icon'=>'bx bx-right-arrow-alt',
-                                    'path'=> route('bims-onboarding.BIMSRecords.report'),
-                                    'route-selector'=>'bims-onboarding/BIMSRecords/report*',
-                                    'is-parent'=>false,
-                                    'children' => []
-                                ],
-                            ]
+                            'children' => []
+                        ];
+                        $fc_menu['mnu_bims_dashboard']['children']["mnu_td_bim_record_report_admin"] = [
+                            'id'=>'mnu_td_bim_record_report',
+                            'label'=>'BIMS Record Report',
+                            'icon'=>'bx bx-book-content',
+                            'path'=> route('bims-onboarding.BIMSRecords.report'),
+                            'route-selector'=>'bims-onboarding/BIMSRecords/report*',
+                            'is-parent'=>false,
+                            'children' => []
                         ];
                     }
                 }

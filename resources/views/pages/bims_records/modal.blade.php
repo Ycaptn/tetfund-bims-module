@@ -33,9 +33,7 @@
                             </div>
                             <div id="div-edit-txt-bIMSRecord-primary-id">
                                 <div class="row">
-                                    <div class="col-lg-12">
                                     @include('tetfund-bims-module::pages.bims_records.fields')
-                                    </div>
                                 </div>
                             </div>
 
@@ -155,45 +153,49 @@ $(document).ready(function() {
         $('#div-edit-txt-bIMSRecord-primary-id').show();
         let itemId = $(this).attr('data-val');
 
-        $.get( "{{ route('bims-onboarding-api.bims_records.show','') }}/"+itemId).done(function( response ) {     
-
+        $.get( "{{ route('bims-onboarding-api.bims_records.show','') }}/"+itemId).done(function( response ) { 
+                
+            if (typeof formartFormEditables !="undefined" && formartFormEditables instanceof Function)
+            formartFormEditables(response.data);
+            
 			$('#txt-bIMSRecord-primary-id').val(response.data.id);
-            		$('#first_name_verified').val(response.data.first_name_verified);
-		$('#middle_name_verified').val(response.data.middle_name_verified);
-		$('#last_name_verified').val(response.data.last_name_verified);
-		$('#name_title_verified').val(response.data.name_title_verified);
-		$('#name_suffix_verified').val(response.data.name_suffix_verified);
-		$('#matric_number_verified').val(response.data.matric_number_verified);
-		$('#staff_number_verified').val(response.data.staff_number_verified);
-		$('#email_verified').val(response.data.email_verified);
-		$('#phone_verified').val(response.data.phone_verified);
-		$('#phone_network_verified').val(response.data.phone_network_verified);
-		$('#bvn_verified').val(response.data.bvn_verified);
-		$('#nin_verified').val(response.data.nin_verified);
-		$('#dob_verified').val(response.data.dob_verified);
-		$('#gender_verified').val(response.data.gender_verified);
-		$('#first_name_imported').val(response.data.first_name_imported);
-		$('#middle_name_imported').val(response.data.middle_name_imported);
-		$('#last_name_imported').val(response.data.last_name_imported);
-		$('#name_title_imported').val(response.data.name_title_imported);
-		$('#name_suffix_imported').val(response.data.name_suffix_imported);
-		$('#matric_number_imported').val(response.data.matric_number_imported);
-		$('#staff_number_imported').val(response.data.staff_number_imported);
-		$('#email_imported').val(response.data.email_imported);
-		$('#phone_imported').val(response.data.phone_imported);
-		$('#phone_network_imported').val(response.data.phone_network_imported);
-		$('#bvn_imported').val(response.data.bvn_imported);
-		$('#nin_imported').val(response.data.nin_imported);
-		$('#dob_imported').val(response.data.dob_imported);
-		$('#gender_imported').val(response.data.gender_imported);
-		$('#user_status').val(response.data.user_status);
-		$('#user_type').val(response.data.user_type);
-		$('#admin_entered_record_issues').val(response.data.admin_entered_record_issues);
-		$('#admin_entered_record_notes').val(response.data.admin_entered_record_notes);
-
-
+            $('#beneficiary_id').val(response.data.beneficiary_id);
+            $('#first_name_verified').val(response.data.first_name_verified);
+            $('#middle_name_verified').val(response.data.middle_name_verified);
+            $('#last_name_verified').val(response.data.last_name_verified);
+            $('#name_title_verified').val(response.data.name_title_verified);
+            $('#name_suffix_verified').val(response.data.name_suffix_verified);
+            $('#matric_number_verified').val(response.data.matric_number_verified);
+            $('#staff_number_verified').val(response.data.staff_number_verified);
+            $('#email_verified').val(response.data.email_verified);
+            $('#phone_verified').val(response.data.phone_verified);
+            $('#phone_network_verified').val(response.data.phone_network_verified);
+            $('#bvn_verified').val(response.data.bvn_verified);
+            $('#nin_verified').val(response.data.nin_verified);
+            $('#dob_verified').val(response.data.dob_verified);
+            $('#gender_verified').val(response.data.gender_verified);
+            $('#first_name_imported').val(response.data.first_name_imported);
+            $('#middle_name_imported').val(response.data.middle_name_imported);
+            $('#last_name_imported').val(response.data.last_name_imported);
+            $('#name_title_imported').val(response.data.name_title_imported);
+            $('#name_suffix_imported').val(response.data.name_suffix_imported);
+            $('#matric_number_imported').val(response.data.matric_number_imported);
+            $('#staff_number_imported').val(response.data.staff_number_imported);
+            $('#email_imported').val(response.data.email_imported);
+            $('#phone_imported').val(response.data.phone_imported);
+            $('#phone_network_imported').val(response.data.phone_network_imported);
+            $('#bvn_imported').val(response.data.bvn_imported);
+            $('#nin_imported').val(response.data.nin_imported);
+            $('#dob_imported').val(response.data.dob_imported);
+            $('#gender_imported').val(response.data.gender_imported);
+            $('#user_status').val(response.data.user_status);
+            $('#user_type').val(response.data.user_type);
+            $('#admin_entered_record_issues').val(response.data.admin_entered_record_issues);
+            $('#admin_entered_record_notes').val(response.data.admin_entered_record_notes);
             $("#spinner-b_i_m_s_records").hide();
             $("#div-save-mdl-bIMSRecord-modal").attr('disabled', false);
+
+            
         });
     });
 
@@ -303,40 +305,39 @@ $(document).ready(function() {
             formData.append('organization_id', '{{$organization->id}}');
         @endif
         // formData.append('', $('#').val());
-        		if ($('#first_name_verified').length){	formData.append('first_name_verified',$('#first_name_verified').val());	}
-		if ($('#middle_name_verified').length){	formData.append('middle_name_verified',$('#middle_name_verified').val());	}
-		if ($('#last_name_verified').length){	formData.append('last_name_verified',$('#last_name_verified').val());	}
-		if ($('#name_title_verified').length){	formData.append('name_title_verified',$('#name_title_verified').val());	}
-		if ($('#name_suffix_verified').length){	formData.append('name_suffix_verified',$('#name_suffix_verified').val());	}
-		if ($('#matric_number_verified').length){	formData.append('matric_number_verified',$('#matric_number_verified').val());	}
-		if ($('#staff_number_verified').length){	formData.append('staff_number_verified',$('#staff_number_verified').val());	}
-		if ($('#email_verified').length){	formData.append('email_verified',$('#email_verified').val());	}
-		if ($('#phone_verified').length){	formData.append('phone_verified',$('#phone_verified').val());	}
-		if ($('#phone_network_verified').length){	formData.append('phone_network_verified',$('#phone_network_verified').val());	}
-		if ($('#bvn_verified').length){	formData.append('bvn_verified',$('#bvn_verified').val());	}
-		if ($('#nin_verified').length){	formData.append('nin_verified',$('#nin_verified').val());	}
-		if ($('#dob_verified').length){	formData.append('dob_verified',$('#dob_verified').val());	}
-		if ($('#gender_verified').length){	formData.append('gender_verified',$('#gender_verified').val());	}
-		if ($('#first_name_imported').length){	formData.append('first_name_imported',$('#first_name_imported').val());	}
-		if ($('#middle_name_imported').length){	formData.append('middle_name_imported',$('#middle_name_imported').val());	}
-		if ($('#last_name_imported').length){	formData.append('last_name_imported',$('#last_name_imported').val());	}
-		if ($('#name_title_imported').length){	formData.append('name_title_imported',$('#name_title_imported').val());	}
-		if ($('#name_suffix_imported').length){	formData.append('name_suffix_imported',$('#name_suffix_imported').val());	}
-		if ($('#matric_number_imported').length){	formData.append('matric_number_imported',$('#matric_number_imported').val());	}
-		if ($('#staff_number_imported').length){	formData.append('staff_number_imported',$('#staff_number_imported').val());	}
-		if ($('#email_imported').length){	formData.append('email_imported',$('#email_imported').val());	}
-		if ($('#phone_imported').length){	formData.append('phone_imported',$('#phone_imported').val());	}
-		if ($('#phone_network_imported').length){	formData.append('phone_network_imported',$('#phone_network_imported').val());	}
-		if ($('#bvn_imported').length){	formData.append('bvn_imported',$('#bvn_imported').val());	}
-		if ($('#nin_imported').length){	formData.append('nin_imported',$('#nin_imported').val());	}
-		if ($('#dob_imported').length){	formData.append('dob_imported',$('#dob_imported').val());	}
-		if ($('#gender_imported').length){	formData.append('gender_imported',$('#gender_imported').val());	}
-		if ($('#user_status').length){	formData.append('user_status',$('#user_status').val());	}
-		if ($('#user_type').length){	formData.append('user_type',$('#user_type').val());	}
-		if ($('#admin_entered_record_issues').length){	formData.append('admin_entered_record_issues',$('#admin_entered_record_issues').val());	}
-		if ($('#admin_entered_record_notes').length){	formData.append('admin_entered_record_notes',$('#admin_entered_record_notes').val());	}
-
-
+        if ($('#beneficiary_id').length){	formData.append('beneficiary_id',$('#beneficiary_id').val());	}
+        if ($('#first_name_verified').length){	formData.append('first_name_verified',$('#first_name_verified').val());	}
+        if ($('#middle_name_verified').length){	formData.append('middle_name_verified',$('#middle_name_verified').val());	}
+        if ($('#last_name_verified').length){	formData.append('last_name_verified',$('#last_name_verified').val());	}
+        if ($('#name_title_verified').length){	formData.append('name_title_verified',$('#name_title_verified').val());	}
+        if ($('#name_suffix_verified').length){	formData.append('name_suffix_verified',$('#name_suffix_verified').val());	}
+        if ($('#matric_number_verified').length){	formData.append('matric_number_verified',$('#matric_number_verified').val());	}
+        if ($('#staff_number_verified').length){	formData.append('staff_number_verified',$('#staff_number_verified').val());	}
+        if ($('#email_verified').length){	formData.append('email_verified',$('#email_verified').val());	}
+        if ($('#phone_verified').length){	formData.append('phone_verified',$('#phone_verified').val());	}
+        if ($('#phone_network_verified').length){	formData.append('phone_network_verified',$('#phone_network_verified').val());	}
+        if ($('#bvn_verified').length){	formData.append('bvn_verified',$('#bvn_verified').val());	}
+        if ($('#nin_verified').length){	formData.append('nin_verified',$('#nin_verified').val());	}
+        if ($('#dob_verified').length){	formData.append('dob_verified',$('#dob_verified').val());	}
+        if ($('#gender_verified').length){	formData.append('gender_verified',$('#gender_verified').val());	}
+        if ($('#first_name_imported').length){	formData.append('first_name_imported',$('#first_name_imported').val());	}
+        if ($('#middle_name_imported').length){	formData.append('middle_name_imported',$('#middle_name_imported').val());	}
+        if ($('#last_name_imported').length){	formData.append('last_name_imported',$('#last_name_imported').val());	}
+        if ($('#name_title_imported').length){	formData.append('name_title_imported',$('#name_title_imported').val());	}
+        if ($('#name_suffix_imported').length){	formData.append('name_suffix_imported',$('#name_suffix_imported').val());	}
+        if ($('#matric_number_imported').length){	formData.append('matric_number_imported',$('#matric_number_imported').val());	}
+        if ($('#staff_number_imported').length){	formData.append('staff_number_imported',$('#staff_number_imported').val());	}
+        if ($('#email_imported').length){	formData.append('email_imported',$('#email_imported').val());	}
+        if ($('#phone_imported').length){	formData.append('phone_imported',$('#phone_imported').val());	}
+        if ($('#phone_network_imported').length){	formData.append('phone_network_imported',$('#phone_network_imported').val());	}
+        if ($('#bvn_imported').length){	formData.append('bvn_imported',$('#bvn_imported').val());	}
+        if ($('#nin_imported').length){	formData.append('nin_imported',$('#nin_imported').val());	}
+        if ($('#dob_imported').length){	formData.append('dob_imported',$('#dob_imported').val());	}
+        if ($('#gender_imported').length){	formData.append('gender_imported',$('#gender_imported').val());	}
+        if ($('#user_status').length){	formData.append('user_status',$('#user_status').val());	}
+        if ($('#user_type').length){	formData.append('user_type',$('#user_type').val());	}
+        if ($('#admin_entered_record_issues').length){	formData.append('admin_entered_record_issues',$('#admin_entered_record_issues').val());	}
+        if ($('#admin_entered_record_notes').length){	formData.append('admin_entered_record_notes',$('#admin_entered_record_notes').val());	}
         {{-- 
         swal({
             title: '<div id="spinner-b_i_m_s_records" class="spinner-border text-primary" role="status"> <span class="visually-hidden">  Processing...  </span> </div> <br><br> Please wait...',

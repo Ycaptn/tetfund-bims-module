@@ -119,7 +119,22 @@ class BIMSRecord extends Model
         'user_status',
         'user_type',
         'admin_entered_record_issues',
-        'admin_entered_record_notes'
+        'admin_entered_record_notes',
+    ];
+
+    
+    /**
+     *  The attributes can be editable when not verified 
+     *  
+     *  @var array 
+     */
+    public $editable = [
+        'matric_number_imported',
+        'staff_number_imported',
+        'email_imported',
+        'phone_imported',
+        'phone_network_imported',
+        'user_type',
     ];
 
     /**
@@ -161,9 +176,8 @@ class BIMSRecord extends Model
         'display_ordinal' => 'integer',
         'admin_entered_record_issues' => 'string',
         'admin_entered_record_notes' => 'string',
-        'verification_meta_data' => 'string'
+        'verification_meta_data' => 'string',
     ];
-
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -171,6 +185,36 @@ class BIMSRecord extends Model
     public function beneficiary()
     {
         return $this->belongsTo(\App\Models\Beneficiary::class, 'beneficiary_id');
+    }
+
+    public function updatableInputs(){
+        $updatable_inputs = [];
+        if($this->is_verified)
+        return $updatable_inputs;
+
+        $data = $this->toArray();
+        foreach ($data as $key => $value) {
+            if(str_ends_with($key, '_imported')) {
+                $prop = substr($key, 0, strlen($key) - strlen('_imported') );
+                $prop_verified = $prop."_verified";
+
+                if(!array_key_exists($prop_verified, $data))
+                continue;
+
+                if( ($data[$key] != $data[$prop_verified]
+                    || $data[$prop_verified] = "" 
+                    || $data[$prop_verified] = null
+                    )
+                    && in_array($key, $this->editable)
+                )
+                $updatable_inputs = array_merge($updatable_inputs, [$key]);
+
+            }else{
+                if(in_array($key, $this->editable))
+                $updatable_inputs = array_merge($updatable_inputs, [$key]);
+            }
+        }
+        return $updatable_inputs;
     }
 
 }

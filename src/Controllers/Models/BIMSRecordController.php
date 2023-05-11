@@ -132,11 +132,12 @@ class BIMSRecordController extends BaseController
         /** @var BIMSRecord $bIMSRecord */
         $bIMSRecord = BIMSRecord::find($id);
 
-        if (empty($bIMSRecord)) {
+        if (empty($bIMSRecord || $bIMSRecord->is_verified)) {
             return redirect(route('bims-onboarding.BIMSRecords.index'));
         }
 
-        $bIMSRecord->fill($request->all());
+        // $bIMSRecord->fill($request->all());
+        $bIMSRecord->fill($request->only($bIMSRecord->updatableInputs()));
         $bIMSRecord->save();
         
         BIMSRecordUpdated::dispatch($bIMSRecord);

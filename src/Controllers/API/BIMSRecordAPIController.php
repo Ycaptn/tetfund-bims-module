@@ -112,7 +112,11 @@ class BIMSRecordAPIController extends AppBaseController
             return $this->sendError('B I M S Record not found');
         }
 
-        $bIMSRecord->fill($request->all());
+        if($bIMSRecord->is_verified)
+        return $this->sendResponse($bIMSRecord->toArray(), 'BIMSRecord is already verified, data update not committed');
+
+        // $bIMSRecord->fill($request->all());
+        $bIMSRecord->fill($request->only($bIMSRecord->updatableInputs()));
         $bIMSRecord->save();
         
         BIMSRecordUpdated::dispatch($bIMSRecord);
