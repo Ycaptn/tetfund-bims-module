@@ -32,6 +32,22 @@ BIMS Onboarding Records
 
 @section('content')
 
+    @php
+        $total_count = \BIMSOnboarding::get_bims_records_count();
+        $academic_staff_count = \BIMSOnboarding::get_bims_records_count('academic');
+        $non_academic_staff_count = \BIMSOnboarding::get_bims_records_count('non-academic');
+        $student_count = \BIMSOnboarding::get_bims_records_count('student');
+        $others_count = \BIMSOnboarding::get_bims_records_count('other');
+        $verified_count = \BIMSOnboarding::get_bims_records_count(null,null,1);
+
+        $academic_staff_pct = ($total_count>0) ? 100*($academic_staff_count/$total_count) : 0;
+        $non_academic_staff_pct = ($total_count>0) ? 100*($non_academic_staff_count/$total_count) : 0;
+        $student_pct = ($total_count>0) ? 100*($student_count/$total_count) : 0;
+        $others_pct = ($total_count>0) ? 100*($others_count/$total_count) : 0;
+        $verified_pct = ($total_count>0) ? 100*($verified_count/$total_count) : 0;
+    @endphp
+
+
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-3 row-cols-xxl-3">
         
         <div class="col">
@@ -40,7 +56,7 @@ BIMS Onboarding Records
                     <div class="d-flex align-items-center">
                         <div class="">
                             <p class="mb-1 fw-bold">Total Staff</p>
-                            <h4 class="mb-0 text-success">15666</h4>
+                            <h4 class="mb-0 text-success">{{number_format(($academic_staff_count+$non_academic_staff_count),0)}}</h4>
                         </div>
                         <div class="ms-auto widget-icon bg-success text-white">
                             <i class="bi bi-layout-wtf text-white"></i>
@@ -57,7 +73,7 @@ BIMS Onboarding Records
                     <div class="d-flex align-items-center">
                         <div class="">
                             <p class="mb-1 fw-bold">Total Students</p>
-                            <h4 class="mb-0 text-pink">54666</h4>
+                            <h4 class="mb-0 text-pink">{{number_format(($student_count),0)}}</h4>
                         </div>
                         <div class="ms-auto widget-icon bg-pink text-white">
                             <i class="bi bi-box-arrow-up-right text-white"></i>
@@ -74,7 +90,7 @@ BIMS Onboarding Records
                     <div class="d-flex align-items-center">
                         <div class="">
                             <p class="mb-1 fw-bold">Others</p>
-                            <h4 class="mb-0 text-orange">15000</h4>
+                            <h4 class="mb-0 text-orange">{{number_format(($others_count),0)}}</h4>
                         </div>
                         <div class="ms-auto widget-icon bg-orange text-white">
                             <i class="bi bi-box-arrow-in-down-right text-white"></i>

@@ -269,6 +269,7 @@
 //         form_input_div.style.visibility = "hidden";
         
     function formartFormEditables(bims_record=null){
+        @if ($bim_record!=null)
         if(bims_record==null)
         return
         verified = '_verified'
@@ -310,5 +311,6 @@
               
            
         }
+        @endif
     }
 </script>
