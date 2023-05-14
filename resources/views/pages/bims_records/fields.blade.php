@@ -260,6 +260,7 @@
 </div>
 <script>   
     function formartFormEditables(bims_record=null){
+        @if ($bim_record!=null)
         if(bims_record==null)
         return
 
@@ -309,5 +310,6 @@
               
            
         }
+        @endif
     }
 </script>
