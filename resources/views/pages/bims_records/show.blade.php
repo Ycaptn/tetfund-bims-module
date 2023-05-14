@@ -16,7 +16,7 @@ B I M S Record
 @stop
 
 @section('page_title_subtext')
-<a class="ms-1" href="{{ route('bims-onboarding.bIMSRecords.index') }}">
+<a class="ms-1" href="{{ route('bims-onboarding.BIMSRecords.index') }}">
     <i class="fa fa-angle-double-left"></i> Back to B I M S Record List
 </a>
 @stop
@@ -38,7 +38,7 @@ B I M S Record
     </a>
 
     @if (Auth()->user()->hasAnyRole(['','admin']))
-        @include('tetfund-bims-module::pages.b_i_m_s_records.bulk-upload-modal')
+        @include('tetfund-bims-module::pages.bims_records.bulk-upload-modal')
     @endif
 @stop
 
@@ -48,8 +48,8 @@ B I M S Record
     <div class="card border-top border-0 border-4 border-primary">
         <div class="card-body">
 
-            @include('tetfund-bims-module::pages.b_i_m_s_records.modal') 
-            @include('tetfund-bims-module::pages.b_i_m_s_records.show_fields')
+            @include('tetfund-bims-module::pages.bims_records.modal') 
+            @include('tetfund-bims-module::pages.bims_records.show_fields')
             
         </div>
     </div>

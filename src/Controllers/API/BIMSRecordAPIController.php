@@ -116,7 +116,7 @@ class BIMSRecordAPIController extends AppBaseController
         return $this->sendResponse($bIMSRecord->toArray(), 'BIMSRecord is already verified, data update not committed');
 
         // $bIMSRecord->fill($request->all());
-        $bIMSRecord->fill($request->only($bIMSRecord->updatableInputs()));
+        $bIMSRecord->fill($request->only($bIMSRecord->updatable));
         $bIMSRecord->save();
         
         BIMSRecordUpdated::dispatch($bIMSRecord);
@@ -146,4 +146,58 @@ class BIMSRecordAPIController extends AppBaseController
         BIMSRecordDeleted::dispatch($bIMSRecord);
         return $this->sendSuccess('B I M S Record deleted successfully');
     }
+
+   /* verify and confirm the specified resource data.
+    *
+    * @param TETFund\BIMSOnboarding\Models\BIMSRecord $id 
+    * @param Hasob\FoundationCore\Models\Organization $organization
+    * @param TETFund\BIMSOnboarding\Requests\API\UpdateBIMSRecordAPIRequest $request
+    *
+    * @return \Illuminate\Http\Response
+    */
+   public function confirm($id, UpdateBIMSRecordAPIRequest $request, Organization $organization)
+   {
+        /** @var BIMSRecord $bIMSRecord */
+        $bIMSRecord = BIMSRecord::find($id);
+        if (empty($bIMSRecord)) {
+            return $this->sendError('B I M S Record not found');
+        }
+
+        if($bIMSRecord->is_verified){
+            return $this->sendError('BIMS record is already verified');
+        }
+
+        $request_only_updatables = $request->only($bIMSRecord->updatable);
+        
+        // $bIMSRecord->fill($request->all());
+        $bIMSRecord->fill($request_only_updatables);
+        $bIMSRecord->save();
+
+        $verified_data = $bIMSRecord->toArray();
+
+        // set all verifying data to verified 
+        foreach ($request_only_updatables as $key => $request_only_updatable) {
+            if(!array_key_exists($key, $verified_data))
+            continue;
+            
+            if(str_ends_with($key, '_imported')) {
+                $prop = substr($key, 0, strlen($key) - strlen('_imported') );
+                $prop_verified = $prop."_verified";
+                if(array_key_exists($prop_verified, $verified_data)){
+                    $verified_data[$prop_verified] = $request_only_updatable;
+                }
+            }
+        }
+
+        // commit the verified data
+        $bIMSRecord->update($verified_data);
+
+        // set is verifed if updatable is confirmed
+        $bIMSRecord->is_verified = $bIMSRecord->is_confirmed;
+        $bIMSRecord->user_status = $bIMSRecord->is_confirmed? 'verified-by-owner' : $bIMSRecord->user_status;
+
+        $bIMSRecord->save();
+
+        return $this->sendSuccess('B I M S Record verified successfully');
+   }
 }

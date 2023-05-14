@@ -275,7 +275,6 @@ $(document).ready(function() {
         e.preventDefault();
         $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('input[name="_token"]').val()}});
 
-
         //check for internet status 
         if (!window.navigator.onLine) {
             $('.offline-b_i_m_s_records').fadeIn(300);
@@ -394,6 +393,10 @@ $(document).ready(function() {
             }
         });
     });
+
+    $('#mdl-bIMSRecord-modal').on('hidden.bs.modal', function () {
+         $('.input-field-verification-status').remove();
+    })
 
 });
 </script>

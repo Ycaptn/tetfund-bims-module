@@ -137,7 +137,7 @@ class BIMSRecordController extends BaseController
         }
 
         // $bIMSRecord->fill($request->all());
-        $bIMSRecord->fill($request->only($bIMSRecord->updatableInputs()));
+        $bIMSRecord->fill($request->only($bIMSRecord->updatable));
         $bIMSRecord->save();
         
         BIMSRecordUpdated::dispatch($bIMSRecord);
@@ -227,7 +227,7 @@ class BIMSRecordController extends BaseController
 
                 } else {
 
-                    BIMSRecord::create([
+                  $bims_record =  BIMSRecord::create([
                         'organization_id'=>$current_user->organization_id,
                         'beneficiary_id'=>$beneficiary_member->beneficiary_id,
                         'first_name_imported'=>$first_name,
@@ -240,6 +240,8 @@ class BIMSRecordController extends BaseController
                         'user_status' => 'new-import',
                         'user_type' => $request->user_type,
                     ]);
+                    
+                    BIMSRecordCreated::dispatch($bims_record);
 
                     $created_records++;
                 }
@@ -270,6 +272,89 @@ class BIMSRecordController extends BaseController
     {   
 
         return $BIMSRecordReportDataTable->render('tetfund-bims-module::pages.bims_records.report');
+    }  
+    
+    /**
+     * Show the form for verifying the specified resource data.
+     *
+     * @param  \App\Models\Airline  $airline
+     * @return \Illuminate\Http\Response
+     */
+    public function verify(Organization $org, $id, Request $request)
+    {
+        $current_user = Auth()->user();
+
+        /** @var BIMSRecord $bIMSRecord */
+        $bIMSRecord = BIMSRecord::find($id);
+
+
+        if (empty($bIMSRecord) ) {
+            return redirect(route('bims-onboarding.BIMSRecords.index'));
+        }
+
+        if($bIMSRecord->is_verified){
+            return redirect(route('bims-onboarding.BIMSRecords.show', $bIMSRecord->id))->with('success', 'BIMS record verified and confirmed');
+        }
+
+        return view('tetfund-bims-module::pages.bims_records.verify')
+                            ->with('bIMSRecord', $bIMSRecord)
+                            ->with('current_user', $current_user);
     }
- 
+
+    /* Show the form for verifying the specified resource data.
+    *
+    * @param  \App\Models\Airline  $airline
+    * @return \Illuminate\Http\Response
+    */
+   public function confirm(Organization $org, $id, Request $request)
+   {
+       $current_user = Auth()->user();
+
+       /** @var BIMSRecord $bIMSRecord */
+       $bIMSRecord = BIMSRecord::find($id);
+
+       if (empty($bIMSRecord) ) {
+           return redirect(route('bims-onboarding.BIMSRecords.index'));
+       }
+
+       if($bIMSRecord->is_verified){
+           return redirect(route('bims-onboarding.BIMSRecords.show', $bIMSRecord->id))->with('success', 'BIMS record is already verified');
+       }
+       $request_only_updatables = $request->only($bIMSRecord->updatable);
+
+        
+        // $bIMSRecord->fill($request->all());
+        $bIMSRecord->fill($request_only_updatables);
+        $bIMSRecord->save();
+            
+        $verified_data = $bIMSRecord->toArray();
+
+        // set all verifying data to verified 
+        foreach ($request_only_updatables as $key => $request_only_updatable) {
+            if(!array_key_exists($key, $verified_data))
+            continue;   
+            
+            if(str_ends_with($key, '_imported')) {
+                $prop = substr($key, 0, strlen($key) - strlen('_imported') );
+                $prop_verified = $prop."_verified";
+                if(array_key_exists($prop_verified, $verified_data)){
+                    $verified_data[$prop_verified] = $request_only_updatable;
+                }
+            }
+        }
+
+        // commit the verified data
+        $bIMSRecord->update($verified_data);
+
+        // set is verifed if updatable is confirmed
+        $bIMSRecord->is_verified = $bIMSRecord->is_confirmed;
+        $bIMSRecord->user_status = $bIMSRecord->is_confirmed? 'verified-by-owner' : $bIMSRecord->user_status;
+
+        $bIMSRecord->save();
+
+        return redirect(route('bims-onboarding.BIMSRecords.show', $bIMSRecord->id))
+        ->with('bIMSRecord', $bIMSRecord)
+        ->with('current_user', $current_user)
+        ->with('success', 'B I M S Record verified successfully');   }
+
 }

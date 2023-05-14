@@ -137,6 +137,7 @@ class BIMSRecord extends Model
         'user_type',
     ];
 
+
     /**
      * The attributes that should be casted to native types.
      *
@@ -179,6 +180,16 @@ class BIMSRecord extends Model
         'verification_meta_data' => 'string',
     ];
 
+     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['editable','updatable', 'is_confirmed'];
+
+    protected $hidden = ['is_confirmed'];
+
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
@@ -187,34 +198,70 @@ class BIMSRecord extends Model
         return $this->belongsTo(\App\Models\Beneficiary::class, 'beneficiary_id');
     }
 
-    public function updatableInputs(){
+    public function getEditableAttribute(){
+        return $this->editable;
+    }
+
+    public function getUpdatableAttribute(){
         $updatable_inputs = [];
-        if($this->is_verified)
+        if($this->attributes['is_verified'] == true)
         return $updatable_inputs;
 
-        $data = $this->toArray();
+        $data = $this->attributes;
         foreach ($data as $key => $value) {
+            if(!in_array($key, $this->editable))
+            continue;
+
             if(str_ends_with($key, '_imported')) {
                 $prop = substr($key, 0, strlen($key) - strlen('_imported') );
                 $prop_verified = $prop."_verified";
 
                 if(!array_key_exists($prop_verified, $data))
-                continue;
+                goto merge;
 
-                if( ($data[$key] != $data[$prop_verified]
-                    || $data[$prop_verified] = "" 
-                    || $data[$prop_verified] = null
-                    )
-                    && in_array($key, $this->editable)
+                if($data[$key] != $data[$prop_verified]
+                    || $data[$prop_verified] == "" 
+                    || is_null($data[$prop_verified])
                 )
-                $updatable_inputs = array_merge($updatable_inputs, [$key]);
-
-            }else{
-                if(in_array($key, $this->editable))
-                $updatable_inputs = array_merge($updatable_inputs, [$key]);
+                goto merge;
+                else continue;
             }
+            merge: 
+                $updatable_inputs = array_merge($updatable_inputs, [$key]);
         }
         return $updatable_inputs;
     }
 
+    public function getIsConfirmedAttribute(){
+        if($this->attributes['is_verified'] == true)
+        return $this->attributes['is_verified'];
+       
+        foreach ($this->updatable as $key => $updatable) {
+            if(!array_key_exists($updatable, $this->attributes))
+            continue;
+
+            if(str_ends_with($updatable, '_imported')) {
+                $prop = substr($updatable, 0, strlen($updatable) - strlen('_imported') );
+                $prop_verified = $prop."_verified";
+
+                if(array_key_exists($prop_verified, $this->attributes))
+                {
+                    if($this->attributes[$updatable] == $this->attributes[$prop_verified]
+                        && $this->attributes[$prop_verified] != "" 
+                        && !is_null($this->attributes[$prop_verified]) 
+                    )
+                    continue;
+                    else return false;
+                }
+
+                else {
+                    if($this->attributes[$updatable] != ""  && !is_null($this->attributes[$updatable]) )
+                        continue;
+                    else return false;
+                }
+            }
+           
+        }
+        return true;
+    }
 }

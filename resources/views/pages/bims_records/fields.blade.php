@@ -258,51 +258,50 @@
         {!! Form::textarea('admin_entered_record_notes', null, ['id'=>'admin_entered_record_notes', 'class' => 'form-control','maxlength' => 2000, 'rows'=>'3']) !!}
     </div>
 </div>
-@php
-  $bim_record =  \TETFund\BIMSOnboarding\Models\BIMSRecord::first();
-@endphp
-<script>
-//     form_input_divs = document.getElementsByClassName(');
-
-//    /* this is an example for new snippet extension make by me xD */
-//     for (const form_input_div of form_input_divs) 
-//         form_input_div.style.visibility = "hidden";
-        
+<script>   
     function formartFormEditables(bims_record=null){
         if(bims_record==null)
         return
+
         verified = '_verified'
         imported = '_imported'
-        editable_props ={{ Illuminate\Support\Js::from($bim_record->updatableInputs()) }}
+        updatable = bims_record['updatable'] ?? []
+        editable =  bims_record['editable'] ?? []
         
         let indicateVerificationStatus = function(property, imported="_imported", verifed="_verified" ){
             if(property.endsWith(imported)){
                 prop = property.substr(0, property.length - imported.length)
                 prop_verified = prop.concat(verified);
-                if(typeof bims_record[property] != 'undefined' && typeof bims_record[prop_verified] != 'undefined'){
-                    $("#div-".concat(property) ).append("<span class='text-warning'>unverified</span>")
+                if(
+                    typeof bims_record[property] != 'undefined' 
+                    && typeof bims_record[prop_verified] != 'undefined'
+                    && updatable.includes(property)
+                ){
+                    $("#div-".concat(property) ).append("<span class='text-warning input-field-verification-status'>unverified</span>")
                 }else{
-                    $("#div-".concat(property) ).append("<span class='text-success'>verified</span>")
+                    $("#div-".concat(property) ).append("<span class='text-success input-field-verification-status'>verified</span>")
                 }
             }
         };
             
-
         for(const property in bims_record ){
-            // disabled prop if not editable
-            input_field = "#".concat(property);
-            div_parent_input = "#div-".concat(property);
 
-            if(!editable_props.includes(property)){
+            input_field = $("#".concat(property))
+            div_parent_input = $("#div-".concat(property))
 
-                if(input_field.length){
-                    $(input_field).attr('readonly', 'readonly');
-                    $(input_field).attr('disabled', 'disabled');
-                }
-                if(div_parent_input.length){
-                    $(div_parent_input).hide();
-                    $(div_parent_input).remove();
+            if(!editable.includes(property)){
+                if(typeof div_parent_input != 'undefined'){
+                    div_parent_input.hide();
+                    div_parent_input.remove();
                }
+            }else {
+                if(!updatable.includes(property)){
+                    input_field.attr('readonly', 'readonly');
+                    input_field.attr('disabled', 'disabled');
+                }else{
+                    input_field.removeAttr('readonly', 'readonly');
+                    input_field.removeAttr('disabled', 'disabled');
+                }
             }
             indicateVerificationStatus(property);
 

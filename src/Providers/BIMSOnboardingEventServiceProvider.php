@@ -9,9 +9,9 @@ class BIMSOnboardingEventServiceProvider extends ServiceProvider
 {
 
     protected $listen = [
-        // OrganizationCreatedEvent::class => [
-        //     OrganizationCreatedListener::class,
-        // ]
+        \TETFund\BIMSOnboarding\Events\BIMSRecordCreated::class => [
+            \TETFund\BIMSOnboarding\Listeners\BIMSRecordCreatedListener::class,
+        ]
     ];
 
     public function boot()

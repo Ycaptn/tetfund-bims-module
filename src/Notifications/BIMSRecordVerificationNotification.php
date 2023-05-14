@@ -7,14 +7,14 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\URL;
 
 use TETFund\BIMSOnboarding\Models\BIMSRecord;
 
-class BIMSRecordCreatedNotification extends Notification
+class BIMSRecordVerificationNotification extends Notification implements ShouldQueue
 {
 
     use Queueable;
-
 
     public $bIMSRecord;
 
@@ -47,10 +47,17 @@ class BIMSRecordCreatedNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)->subject('BIMSRecord created successfully')
+        /**
+         *  Generate a temporal signed link to expire in 2880 mins (2 days)
+         * 
+         *  @var string $url
+         */
+        $url = URL::temporarySignedRoute('bims-onboarding.BIMSRecords.verify', now()->addMinutes(2880), ['BIMSRecords' => $this->bIMSRecord->id]);
+        
+        return (new MailMessage)->subject('BIMSRecord Verification')
                                 ->markdown(
-                                    'tetfund-bims-module::mail.b_i_m_s_records.created',
-                                    ['bIMSRecord' => $this->bIMSRecord]
+                                    'tetfund-bims-module::mail.b_i_m_s_records.verification',
+                                    ['bIMSRecord' => $this->bIMSRecord, 'url' => $url]
                                 );
     }
 

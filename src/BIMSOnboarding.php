@@ -124,9 +124,16 @@ class BIMSOnboarding
     }
 
     public function api_public_routes(){
+        Route::name('bims-onboarding-api.')->prefix('bims-onboarding-api')->group(function(){
+            Route::put('bims_records/{bims_records}/confirm', [\TETFund\BIMSOnboarding\Controllers\API\BIMSRecordAPIController::class, 'confirm'])->name('bims_records.confirm');
+        });
     }
 
     public function public_routes(){
+        Route::name('bims-onboarding.')->prefix('bims-onboarding')->group(function(){
+            Route::get('BIMSRecords/{BIMSRecords}/verify', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'verify'])->name('BIMSRecords.verify')->middleware('signed');
+            Route::put('BIMSRecords/{BIMSRecords}/confirm', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'confirm'])->name('BIMSRecords.confirm');
+        });
     }
 
     public function routes(){
@@ -138,8 +145,8 @@ class BIMSOnboarding
             Route::post('bi-import', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'processBulkUpload'])->name('bi-import-processing');
             
             Route::get('BIMSRecords/report', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'report'])->name('BIMSRecords.report');
-
             Route::resource('BIMSRecords', \TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class);
+
         });
     }
 
