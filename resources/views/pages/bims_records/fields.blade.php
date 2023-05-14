@@ -303,11 +303,7 @@
                     input_field.removeAttr('disabled', 'disabled');
                 }
             }
-            indicateVerificationStatus(property);
-
-
-              
-           
+            indicateVerificationStatus(property);           
         }
     }
 </script>
