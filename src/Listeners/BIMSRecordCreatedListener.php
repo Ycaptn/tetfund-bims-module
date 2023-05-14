@@ -39,10 +39,12 @@ class BIMSRecordCreatedListener implements ShouldQueue
                 ['email_imported' => 'required|string|email|max:300',]
             );
      
-            if (!$validator->fails())
-            Notification::route('mail', [
-                $bIMSRecord->email_imported => $bIMSRecord->first_name_imported,
-            ])->notify( new BIMSRecordVerificationNotification($bIMSRecord));
+            if (!$validator->fails()){
+                Notification::route('mail', [
+                    $bIMSRecord->email_imported => $bIMSRecord->first_name_imported,
+                ])->notify( new BIMSRecordVerificationNotification($bIMSRecord));
+            }
+           
         }
         
     }
