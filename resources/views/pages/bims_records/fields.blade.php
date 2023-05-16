@@ -223,7 +223,7 @@
 <div id="div-gender_imported" class="form-group col-lg-6 mb-1">
     <label for="gender_imported" class="col-lg-12 col-form-label">Gender Imported</label>
     <div class="col-lg-12">
-        {!! Form::select('gender_imported', ['male'=>'male','female'=>'female'], null, ['id'=>'gender_imported', 'class' => 'form-select','maxlength' => 300,]) !!}
+        {!! Form::select('gender_imported', ['M'=>'male','F'=>'female'], null, ['id'=>'gender_imported', 'class' => 'form-select','maxlength' => 300,]) !!}
     </div>
 </div>
 
@@ -239,7 +239,7 @@
 <div id="div-user_type" class="form-group col-lg-6 mb-1">
     <label for="user_type" class="col-lg-12 col-form-label">User Type Imported</label>
     <div class="col-lg-12">
-        {!! Form::select('user_type', ['student'=>'student','academic'=>'academic','non-academic'=>'non-academic', 'other'=>'other'], null, ['id'=>'user_type', 'class' => 'form-select','maxlength' => 100]) !!}
+        {!! Form::select('user_type', ['student'=>'student','academic'=>'academic','non-academic'=>'non-academic', null=>'other' ], null, ['id'=>'user_type', 'class' => 'form-select','maxlength' => 100]) !!}
     </div>
 </div>
 

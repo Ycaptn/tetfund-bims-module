@@ -3,12 +3,22 @@
     <div class="card border-radius-0 border border-1 border-default m-0 p-1">
         <div class="row g-0">
             <div class="col-md-2 text-start align-middle p-1">
+                <!-- <input class="form-check-input" type="checkbox" name="checked_id" id="inlineRadio1" value="{{$data_item->id}}"> -->
                 <a data-toggle="tooltip" 
                     title="Edit" 
                     data-val='{{$data_item->id}}' 
                     class="btn-edit-mdl-bIMSRecord-modal d-print-none" href="#">
                     <i class="bx bxs-edit"></i>
                 </a>
+                {{--
+                    <a data-toggle="tooltip" 
+                    title="Remove" 
+                    data-val='{{$data_item->id}}' 
+                    class="btn-remove-mdl-bIMSRecord-modal d-print-none" href="#">
+                    <i class="text-warning bx bx-export"></i>
+                </a>
+                --}}
+                
                 <a data-toggle="tooltip" 
                     title="Delete" 
                     data-val='{{$data_item->id}}' 

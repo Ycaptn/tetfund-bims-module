@@ -144,6 +144,8 @@ class BIMSOnboarding
             Route::get('bi-import', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'displayBIMSRecordOnboarding'])->name('bi-import');
             Route::post('bi-import', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'processBulkUpload'])->name('bi-import-processing');
             
+            Route::get('bi-remove', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'displayBIMSRecordRemoving'])->name('bi-remove');
+
             Route::get('BIMSRecords/report', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'report'])->name('BIMSRecords.report');
             Route::resource('BIMSRecords', \TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class);
 

@@ -134,6 +134,7 @@ class BIMSRecord extends Model
         'email_imported',
         'phone_imported',
         'phone_network_imported',
+        'gender_imported',
         'user_type',
     ];
 

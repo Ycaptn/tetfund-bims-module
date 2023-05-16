@@ -102,11 +102,14 @@ BIMS Onboarding Records
 
 </div>
     
-    <div class="card border-top border-0 border-4 border-primary">
+    <div class="card mt-0 border-top border-0 border-4 border-primary">
         <div class="card-body">
+            <p>To remove records on BIMS, check on the record and click remove</p>
             {{ $cdv_bims_records->render() }}
+
         </div>
     </div>
+
     @include('tetfund-bims-module::pages.bims_records.modal')
 @stop
 

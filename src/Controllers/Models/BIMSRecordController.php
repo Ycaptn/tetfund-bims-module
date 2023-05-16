@@ -191,7 +191,12 @@ class BIMSRecordController extends BaseController
                     $valid_email = $email;
                 }
 
+                // make adjustment for 10 digit phone number without initial 0
+
                 $valid_telephone = null;
+                if(strlen($phone)==10 && is_numeric($phone))
+                    $valid_telephone = '0'. $phone;
+                    
                 if (strlen($phone)==11){
                     $valid_telephone=$phone;
                 }elseif (strlen($phone)>11){
@@ -306,8 +311,8 @@ class BIMSRecordController extends BaseController
     * @param  \App\Models\Airline  $airline
     * @return \Illuminate\Http\Response
     */
-   public function confirm(Organization $org, $id, Request $request)
-   {
+    public function confirm(Organization $org, $id, Request $request)
+    {
        $current_user = Auth()->user();
 
        /** @var BIMSRecord $bIMSRecord */
@@ -355,6 +360,42 @@ class BIMSRecordController extends BaseController
         return redirect(route('bims-onboarding.BIMSRecords.show', $bIMSRecord->id))
         ->with('bIMSRecord', $bIMSRecord)
         ->with('current_user', $current_user)
-        ->with('success', 'B I M S Record verified successfully');   }
+        ->with('success', 'B I M S Record verified successfully');   
+    }
+
+    public function displayBIMSRecordRemoving(Organization $org)
+    { $current_user = Auth()->user();
+        $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
+
+        $cdv_bims_records = new \Hasob\FoundationCore\View\Components\CardDataView(BIMSRecord::class, "tetfund-bims-module::pages.bims_records.card_view_item");
+        $cdv_bims_records->setDataQuery(['organization_id'=>$org->id])
+            ->setDataQuery(['is_verified'=>true])
+            ->setDataQuery(['user_status'=>'bims-active'])
+            ->addDataGroup('All','deleted_at',null)
+            ->addDataGroup('Academic Staff','user_type','academic')
+            ->addDataGroup('Non Academic','user_type','non-academic')
+            ->addDataGroup('Student','user_type','student')
+            ->addDataGroup('Others','user_type',null)
+            ->setSearchFields([
+                "first_name_imported","middle_name_imported","last_name_imported","name_title_imported","name_suffix_imported","matric_number_imported","staff_number_imported","email_imported","phone_imported","phone_network_imported","bvn_imported","nin_imported",
+                "first_name_verified","middle_name_verified","last_name_verified","name_title_verified","name_suffix_verified","matric_number_verified","staff_number_verified","email_verified","phone_verified","phone_network_verified","bvn_verified","nin_verified",
+            ])->enableSearch(true)
+            ->enablePagination(true)
+            ->setPaginationLimit(30)
+            ->setSearchPlaceholder('Search BIMS Onboarding Records');
+
+        if (request()->expectsJson()){
+            return $cdv_bims_records->render();
+        }
+
+        return view('tetfund-bims-module::pages.bims_records.remove')
+        ->with('current_user', $current_user)
+        ->with('beneficiary', optional($beneficiary_member)->beneficiary)
+        ->with('months_list', BaseController::monthsList())
+        ->with('states_list', BaseController::statesList())
+        ->with('cdv_bims_records', $cdv_bims_records);
+
+    }
+   
 
 }

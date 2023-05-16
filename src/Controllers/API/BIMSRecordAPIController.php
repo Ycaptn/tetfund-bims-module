@@ -17,6 +17,7 @@ use Hasob\FoundationCore\Traits\ApiResponder;
 use Hasob\FoundationCore\Models\Organization;
 
 use Hasob\FoundationCore\Controllers\BaseController as AppBaseController;
+use TETFund\BIMSOnboarding\Jobs\PushRecordToBIMS;
 
 /**
  * Class BIMSRecordController
@@ -107,7 +108,7 @@ class BIMSRecordAPIController extends AppBaseController
     {
         /** @var BIMSRecord $bIMSRecord */
         $bIMSRecord = BIMSRecord::find($id);
-
+        
         if (empty($bIMSRecord)) {
             return $this->sendError('B I M S Record not found');
         }
@@ -197,6 +198,9 @@ class BIMSRecordAPIController extends AppBaseController
         $bIMSRecord->user_status = $bIMSRecord->is_confirmed? 'verified-by-owner' : $bIMSRecord->user_status;
 
         $bIMSRecord->save();
+
+        if($bIMSRecord->is_verified)
+        PushRecordToBIMS::dispatch($bIMSRecord);
 
         return $this->sendSuccess('B I M S Record verified successfully');
    }

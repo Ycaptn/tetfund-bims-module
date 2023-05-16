@@ -1,5 +1,23 @@
 
 
+<!-- <div class="card mt-0">
+    <div class="card-footer mt-0">
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+            <label class="form-check-label" for="inlineRadio1">Check all</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <a href="#" class="text-info btn btn-sm">
+                <i class="text-info bx bx-export"></i> Remove
+            </a>
+        </div>
+        <div class="form-check form-check-inline">
+            <a href="#" class="text-danger btn btn-sm">
+                <i class="text-danger bx bxs-trash-alt"></i> Delete
+            </a>
+        </div>
+    </div>
+</div> -->
 <div class="modal fade" id="mdl-bIMSRecord-modal" tabindex="-1" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -50,6 +68,8 @@
         </div>
     </div>
 </div>
+
+
 
 @push('page_scripts')
 <script type="text/javascript">

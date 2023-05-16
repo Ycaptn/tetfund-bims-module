@@ -9,18 +9,23 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class MailBIMSRecordConfirmation implements ShouldQueue
+use TETFund\BIMSOnboarding\Models\BIMSRecord;
+
+class RemoveRecordFromBIMS implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public $bIMSRecord;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(BIMSRecord $bIMSRecord)
     {
-        //
+        $this->bIMSRecord = $bIMSRecord;
+
     }
 
     /**
@@ -30,6 +35,11 @@ class MailBIMSRecordConfirmation implements ShouldQueue
      */
     public function handle()
     {
-        //
+        /**
+         * Awaiting API BIMS endpoint for bim record remove
+         */
+        
+        return;
+
     }
 }

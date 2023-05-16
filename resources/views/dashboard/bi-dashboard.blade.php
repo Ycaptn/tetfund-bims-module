@@ -14,7 +14,7 @@ BIMS Identities Onboarding
 
 @section('page_title_subtext')
 <a class="ms-1" href="{{ route('dashboard') }}">
-    <i class="bx bx-chevron-left"></i> Back to Dashboard
+    <i class="bx bx-chevron-left"></i> Back to Dashboard 
 </a>
 @stop
 
@@ -100,7 +100,7 @@ BIMS Identities Onboarding
                                 <i class="bx bx-import"></i> Onboard
                             </a>
                             <a href="#" class="btn btn-sm btn-primary bg-olive mx-1" title="Remove">
-                                <i class="bx bx-export"></i> Remove
+                                <i class="bx bx-export"></i> Remove 
                             </a>
                         </div>
                     </div>
