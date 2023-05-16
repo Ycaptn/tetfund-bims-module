@@ -3,9 +3,10 @@
 namespace TETFund\BIMSOnboarding\Listeners;
 
 use TETFund\BIMSOnboarding\Models\BIMSRecord;
-use TETFund\BIMSOnboarding\Models\BIMSRecordDeleted;
+use TETFund\BIMSOnboarding\Events\BIMSRecordDeleted;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use TETFund\BIMSOnboarding\Jobs\RemoveRecordFromBIMS;
 
 class BIMSRecordDeletedListener
 {
@@ -27,6 +28,7 @@ class BIMSRecordDeletedListener
      */
     public function handle(BIMSRecordDeleted $event)
     {
-        //
-    }
+        $bIMSRecord = $event->bIMSRecord;
+        RemoveRecordFromBIMS::dispatch($bIMSRecord);
+    }   
 }

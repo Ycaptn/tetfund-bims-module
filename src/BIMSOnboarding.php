@@ -119,6 +119,8 @@ class BIMSOnboarding
 
     public function api_routes(){
         Route::name('bims-onboarding-api.')->prefix('bims-onboarding-api')->group(function(){
+            Route::put('bims_records/{bims_records}/remove_from_bims', [\TETFund\BIMSOnboarding\Controllers\API\BIMSRecordAPIController::class, 'removeFromBIMS'])->name('bims_records.remove_from_bims');
+            Route::put('bims_records/{bims_records}/push_to_bims', [\TETFund\BIMSOnboarding\Controllers\API\BIMSRecordAPIController::class, 'pushToBIMS'])->name('bims_records.push_to_bims');
             Route::resource('bims_records', \TETFund\BIMSOnboarding\Controllers\API\BIMSRecordAPIController::class);
         });
     }

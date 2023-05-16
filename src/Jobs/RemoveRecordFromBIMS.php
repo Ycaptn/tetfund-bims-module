@@ -35,11 +35,12 @@ class RemoveRecordFromBIMS implements ShouldQueue
      */
     public function handle()
     {
-        /**
-         * Awaiting API BIMS endpoint for bim record remove
-         */
-        
+        if($this->bIMSRecord->user_status !='bims-active')
         return;
 
+        // API call to remove bims record from bims 
+        $this->bIMSRecord->user_status = 'bims-removed';
+        $this->bIMSRecord->save();
     }
+    
 }

@@ -10,15 +10,23 @@
                     class="btn-edit-mdl-bIMSRecord-modal d-print-none" href="#">
                     <i class="bx bxs-edit"></i>
                 </a>
-                {{--
+                @if($data_item->is_verified && $data_item->user_status !='bims-active' )
                     <a data-toggle="tooltip" 
-                    title="Remove" 
-                    data-val='{{$data_item->id}}' 
-                    class="btn-remove-mdl-bIMSRecord-modal d-print-none" href="#">
-                    <i class="text-warning bx bx-export"></i>
-                </a>
-                --}}
-                
+                        title="Push to BIM" 
+                        data-val='{{$data_item->id}}' 
+                        class="btn-push-to-bim-mdl-bIMSRecord-modal d-print-none" href="#">
+                        <i class="text-info bx bx-archive-out"></i>
+                    </a> 
+                @endif  
+                @if($data_item->user_status =='bims-active' )
+                    </a>
+                        <a data-toggle="tooltip" 
+                        title="Remove from BIM" 
+                        data-val='{{$data_item->id}}' 
+                        class="btn-remove-from-bim-mdl-bIMSRecord-modal d-print-none" href="#">
+                        <i class="text-warning bx bx-archive"></i>
+                    </a>  
+                @endif              
                 <a data-toggle="tooltip" 
                     title="Delete" 
                     data-val='{{$data_item->id}}' 

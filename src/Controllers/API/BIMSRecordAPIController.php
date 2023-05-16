@@ -18,6 +18,7 @@ use Hasob\FoundationCore\Models\Organization;
 
 use Hasob\FoundationCore\Controllers\BaseController as AppBaseController;
 use TETFund\BIMSOnboarding\Jobs\PushRecordToBIMS;
+use TETFund\BIMSOnboarding\Jobs\RemoveRecordFromBIMS;
 
 /**
  * Class BIMSRecordController
@@ -148,7 +149,7 @@ class BIMSRecordAPIController extends AppBaseController
         return $this->sendSuccess('B I M S Record deleted successfully');
     }
 
-   /* verify and confirm the specified resource data.
+    /* verify and confirm the specified resource data.
     *
     * @param TETFund\BIMSOnboarding\Models\BIMSRecord $id 
     * @param Hasob\FoundationCore\Models\Organization $organization
@@ -204,4 +205,53 @@ class BIMSRecordAPIController extends AppBaseController
 
         return $this->sendSuccess('B I M S Record verified successfully');
    }
+
+   /* remove bims record from bims
+    *
+    * @param TETFund\BIMSOnboarding\Models\BIMSRecord $id 
+    * @param Hasob\FoundationCore\Models\Organization $organization
+    *
+    * @return \Illuminate\Http\Response
+    */
+    public function pushToBIMS($id, Organization $organization)
+    {
+         /** @var BIMSRecord $bIMSRecord */
+         $bIMSRecord = BIMSRecord::find($id);
+         if (empty($bIMSRecord)) {
+             return $this->sendError('B I M S Record not found');
+        }
+         if($bIMSRecord->user_status=='bims-active'){
+            return $this->sendSuccess('B I M S Record is already pushed to BIM');
+        }
+
+        if(!$bIMSRecord->is_verified){
+            return $this->sendError('B I M S Record is not verified');
+        }
+        
+        PushRecordToBIMS::dispatchSync($bIMSRecord);
+ 
+        return $this->sendSuccess('B I M S Record pushed to BIMS successfully');
+    }
+
+   /* remove bims record from bims
+    *
+    * @param TETFund\BIMSOnboarding\Models\BIMSRecord $id 
+    * @param Hasob\FoundationCore\Models\Organization $organization
+    *
+    * @return \Illuminate\Http\Response
+    */
+    public function removeFromBIMS($id, Organization $organization)
+    {
+         /** @var BIMSRecord $bIMSRecord */
+         $bIMSRecord = BIMSRecord::find($id);
+         if (empty($bIMSRecord)) {
+             return $this->sendError('B I M S Record not found');
+         }
+ 
+         if($bIMSRecord->user_status=='bims-removed'){
+             return $this->sendSuccess('BIMS record is already removed from BIMS');
+         }
+        RemoveRecordFromBIMS::dispatchSync($bIMSRecord);
+        return $this->sendSuccess('B I M S Record removed from BIMS successfully');
+    }
 }

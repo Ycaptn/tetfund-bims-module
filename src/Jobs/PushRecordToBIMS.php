@@ -38,9 +38,7 @@ class PushRecordToBIMS implements ShouldQueue
         if(is_null($this->bIMSRecord) || !$this->bIMSRecord->is_verified)
         return;
 
-
         $curl = curl_init();
-
 
         curl_setopt_array($curl, array(
         CURLOPT_URL => env('BIMS_REGISTERATION_URI', 'https://bims.tetfund.gov.ng/api/auth/register'),
@@ -79,7 +77,7 @@ class PushRecordToBIMS implements ShouldQueue
         $data = $response['data'] ?? [];
         
         // if ($status== true || $status == 1)
-        attemptBIMRecordActivation(null, $message);
+        $this->attemptBIMRecordActivation(null, $message);
       
     }
 
@@ -96,7 +94,7 @@ class PushRecordToBIMS implements ShouldQueue
             $this->bIMSRecord->user_status = 'bims-active';
             $this->bIMSRecord->save();
         };
-        activateBIMSRecord();
+        $activateBIMSRecord();
 
         // if(is_null($err))
         // activateBIMSRecord();

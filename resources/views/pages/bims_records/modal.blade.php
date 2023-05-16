@@ -118,38 +118,38 @@ $(document).ready(function() {
         $.get( "{{ route('bims-onboarding-api.bims_records.show','') }}/"+itemId).done(function( response ) {
 			
 			$('#txt-bIMSRecord-primary-id').val(response.data.id);
-            		$('#spn_bIMSRecord_first_name_verified').html(response.data.first_name_verified);
-		$('#spn_bIMSRecord_middle_name_verified').html(response.data.middle_name_verified);
-		$('#spn_bIMSRecord_last_name_verified').html(response.data.last_name_verified);
-		$('#spn_bIMSRecord_name_title_verified').html(response.data.name_title_verified);
-		$('#spn_bIMSRecord_name_suffix_verified').html(response.data.name_suffix_verified);
-		$('#spn_bIMSRecord_matric_number_verified').html(response.data.matric_number_verified);
-		$('#spn_bIMSRecord_staff_number_verified').html(response.data.staff_number_verified);
-		$('#spn_bIMSRecord_email_verified').html(response.data.email_verified);
-		$('#spn_bIMSRecord_phone_verified').html(response.data.phone_verified);
-		$('#spn_bIMSRecord_phone_network_verified').html(response.data.phone_network_verified);
-		$('#spn_bIMSRecord_bvn_verified').html(response.data.bvn_verified);
-		$('#spn_bIMSRecord_nin_verified').html(response.data.nin_verified);
-		$('#spn_bIMSRecord_dob_verified').html(response.data.dob_verified);
-		$('#spn_bIMSRecord_gender_verified').html(response.data.gender_verified);
-		$('#spn_bIMSRecord_first_name_imported').html(response.data.first_name_imported);
-		$('#spn_bIMSRecord_middle_name_imported').html(response.data.middle_name_imported);
-		$('#spn_bIMSRecord_last_name_imported').html(response.data.last_name_imported);
-		$('#spn_bIMSRecord_name_title_imported').html(response.data.name_title_imported);
-		$('#spn_bIMSRecord_name_suffix_imported').html(response.data.name_suffix_imported);
-		$('#spn_bIMSRecord_matric_number_imported').html(response.data.matric_number_imported);
-		$('#spn_bIMSRecord_staff_number_imported').html(response.data.staff_number_imported);
-		$('#spn_bIMSRecord_email_imported').html(response.data.email_imported);
-		$('#spn_bIMSRecord_phone_imported').html(response.data.phone_imported);
-		$('#spn_bIMSRecord_phone_network_imported').html(response.data.phone_network_imported);
-		$('#spn_bIMSRecord_bvn_imported').html(response.data.bvn_imported);
-		$('#spn_bIMSRecord_nin_imported').html(response.data.nin_imported);
-		$('#spn_bIMSRecord_dob_imported').html(response.data.dob_imported);
-		$('#spn_bIMSRecord_gender_imported').html(response.data.gender_imported);
-		$('#spn_bIMSRecord_user_status').html(response.data.user_status);
-		$('#spn_bIMSRecord_user_type').html(response.data.user_type);
-		$('#spn_bIMSRecord_admin_entered_record_issues').html(response.data.admin_entered_record_issues);
-		$('#spn_bIMSRecord_admin_entered_record_notes').html(response.data.admin_entered_record_notes);
+            	$('#spn_bIMSRecord_first_name_verified').html(response.data.first_name_verified);
+            $('#spn_bIMSRecord_middle_name_verified').html(response.data.middle_name_verified);
+            $('#spn_bIMSRecord_last_name_verified').html(response.data.last_name_verified);
+            $('#spn_bIMSRecord_name_title_verified').html(response.data.name_title_verified);
+            $('#spn_bIMSRecord_name_suffix_verified').html(response.data.name_suffix_verified);
+            $('#spn_bIMSRecord_matric_number_verified').html(response.data.matric_number_verified);
+            $('#spn_bIMSRecord_staff_number_verified').html(response.data.staff_number_verified);
+            $('#spn_bIMSRecord_email_verified').html(response.data.email_verified);
+            $('#spn_bIMSRecord_phone_verified').html(response.data.phone_verified);
+            $('#spn_bIMSRecord_phone_network_verified').html(response.data.phone_network_verified);
+            $('#spn_bIMSRecord_bvn_verified').html(response.data.bvn_verified);
+            $('#spn_bIMSRecord_nin_verified').html(response.data.nin_verified);
+            $('#spn_bIMSRecord_dob_verified').html(response.data.dob_verified);
+            $('#spn_bIMSRecord_gender_verified').html(response.data.gender_verified);
+            $('#spn_bIMSRecord_first_name_imported').html(response.data.first_name_imported);
+            $('#spn_bIMSRecord_middle_name_imported').html(response.data.middle_name_imported);
+            $('#spn_bIMSRecord_last_name_imported').html(response.data.last_name_imported);
+            $('#spn_bIMSRecord_name_title_imported').html(response.data.name_title_imported);
+            $('#spn_bIMSRecord_name_suffix_imported').html(response.data.name_suffix_imported);
+            $('#spn_bIMSRecord_matric_number_imported').html(response.data.matric_number_imported);
+            $('#spn_bIMSRecord_staff_number_imported').html(response.data.staff_number_imported);
+            $('#spn_bIMSRecord_email_imported').html(response.data.email_imported);
+            $('#spn_bIMSRecord_phone_imported').html(response.data.phone_imported);
+            $('#spn_bIMSRecord_phone_network_imported').html(response.data.phone_network_imported);
+            $('#spn_bIMSRecord_bvn_imported').html(response.data.bvn_imported);
+            $('#spn_bIMSRecord_nin_imported').html(response.data.nin_imported);
+            $('#spn_bIMSRecord_dob_imported').html(response.data.dob_imported);
+            $('#spn_bIMSRecord_gender_imported').html(response.data.gender_imported);
+            $('#spn_bIMSRecord_user_status').html(response.data.user_status);
+            $('#spn_bIMSRecord_user_type').html(response.data.user_type);
+            $('#spn_bIMSRecord_admin_entered_record_issues').html(response.data.admin_entered_record_issues);
+            $('#spn_bIMSRecord_admin_entered_record_notes').html(response.data.admin_entered_record_notes);
 
 
             $("#spinner-b_i_m_s_records").hide();
@@ -414,6 +414,171 @@ $(document).ready(function() {
         });
     });
 
+    // push to bim action
+    $(document).on('click', ".btn-push-to-bim-mdl-bIMSRecord-modal", function(e) {
+        e.preventDefault();
+        $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('input[name="_token"]').val()}});
+
+        //check for internet status 
+        if (!window.navigator.onLine) {
+            $('.offline-b_i_m_s_records').fadeIn(300);
+            return;
+        }else{
+            $('.offline-b_i_m_s_records').fadeOut(300);
+        }
+
+        let itemId = $(this).attr('data-val');
+
+        swal({
+                title: "You are about to push this BIMSRecord to BIM",
+                text: "",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-warning",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                closeOnConfirm: false,
+                closeOnCancel: true
+            }, function(isConfirm) {
+                if (isConfirm) {
+
+                    swal({
+                        title: '<div id="spinner-b_i_m_s_records" class="spinner-border text-primary" role="status"> <span class="visually-hidden">  Processing...  </span> </div> <br><br> Please wait...',
+                        text: 'Pushing BIMSRecord to BIMS.',
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        html: true
+                    }) 
+                                        
+                    let endPointUrl = "{{ route('bims-onboarding-api.bims_records.push_to_bims','') }}";
+                    let index = endPointUrl.indexOf('//', endPointUrl.indexOf('://') + 3);
+
+                    // modified url to include the item id
+                    endPointUrl = endPointUrl.substring(0, index+1) + itemId + endPointUrl.substring(index+1);
+
+                    let formData = new FormData();
+                    formData.append('_token', $('input[name="_token"]').val());
+                    formData.append('_method', 'PUT');
+                    
+                    $.ajax({
+                        url:endPointUrl,
+                        type: "POST",
+                        data: formData,
+                        cache: false,
+                        processData:false,
+                        contentType: false,
+                        dataType: 'json',
+                        success: function(result){
+                            if(result.errors){
+                                console.log(result.errors)
+                                swal("Error", "Oops an error occurred. Please try again.", "error");
+                            }else{
+                                swal({
+                                        title: "Pushed",
+                                        text: "BIMSRecord pushed to BIMS successfully",
+                                        type: "success",
+                                        confirmButtonClass: "btn-success",
+                                        confirmButtonText: "OK",
+                                        closeOnConfirm: false
+                                    },function(){
+                                        location.reload(true);
+                                });
+                            }
+                        }, error: function(data){
+                            console.log(data);
+                            swal("Error", "Oops an error occurred. Please try again.", "error");
+
+                            $("#spinner-b_i_m_s_records").hide();
+                            $("#div-save-mdl-bIMSRecord-modal").attr('disabled', false);
+
+                        }
+                    });
+                }
+        });
+    });
+
+     //remove from bim action
+    $(document).on('click', ".btn-remove-from-bim-mdl-bIMSRecord-modal", function(e) {
+        e.preventDefault();
+        $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('input[name="_token"]').val()}});
+
+        //check for internet status 
+        if (!window.navigator.onLine) {
+            $('.offline-b_i_m_s_records').fadeIn(300);
+            return;
+        }else{
+            $('.offline-b_i_m_s_records').fadeOut(300);
+        }
+
+        let itemId = $(this).attr('data-val');
+
+        swal({
+                title: "Are you sure you want to remove this BIMSRecord from BIM?",
+                text: "",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-warning",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                closeOnConfirm: false,
+                closeOnCancel: true
+            }, function(isConfirm) {
+                if (isConfirm) {
+
+                    swal({
+                        title: '<div id="spinner-b_i_m_s_records" class="spinner-border text-primary" role="status"> <span class="visually-hidden">  Processing...  </span> </div> <br><br> Please wait...',
+                        text: 'Removing BIMSRecord from BIMS.',
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        html: true
+                    }) 
+                                        
+                    let endPointUrl = "{{ route('bims-onboarding-api.bims_records.remove_from_bims','') }}";
+                    let index = endPointUrl.indexOf('//', endPointUrl.indexOf('://') + 3);
+
+                    // modified url to include the item id
+                    endPointUrl = endPointUrl.substring(0, index+1) + itemId + endPointUrl.substring(index+1);
+
+                    let formData = new FormData();
+                    formData.append('_token', $('input[name="_token"]').val());
+                    formData.append('_method', 'PUT');
+                    
+                    $.ajax({
+                        url:endPointUrl,
+                        type: "POST",
+                        data: formData,
+                        cache: false,
+                        processData:false,
+                        contentType: false,
+                        dataType: 'json',
+                        success: function(result){
+                            if(result.errors){
+                                console.log(result.errors)
+                                swal("Error", "Oops an error occurred. Please try again.", "error");
+                            }else{
+                                swal({
+                                        title: "Removed",
+                                        text: "BIMSRecord removed BIMS successfully",
+                                        type: "success",
+                                        confirmButtonClass: "btn-success",
+                                        confirmButtonText: "OK",
+                                        closeOnConfirm: false
+                                    },function(){
+                                        location.reload(true);
+                                });
+                            }
+                        }, error: function(data){
+                            console.log(data);
+                            swal("Error", "Oops an error occurred. Please try again.", "error");
+
+                            $("#spinner-b_i_m_s_records").hide();
+                            $("#div-save-mdl-bIMSRecord-modal").attr('disabled', false);
+
+                        }
+                    });
+                }
+        });
+    });
     $('#mdl-bIMSRecord-modal').on('hidden.bs.modal', function () {
          $('.input-field-verification-status').remove();
     })
