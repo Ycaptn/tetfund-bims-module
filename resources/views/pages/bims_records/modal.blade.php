@@ -174,10 +174,10 @@ $(document).ready(function() {
         let itemId = $(this).attr('data-val');
 
         $.get( "{{ route('bims-onboarding-api.bims_records.show','') }}/"+itemId).done(function( response ) { 
-                
+            
             if (typeof formartFormEditables !="undefined" && formartFormEditables instanceof Function)
             formartFormEditables(response.data);
-            
+    
 			$('#txt-bIMSRecord-primary-id').val(response.data.id);
             $('#beneficiary_id').val(response.data.beneficiary_id);
             $('#first_name_verified').val(response.data.first_name_verified);
@@ -412,6 +412,17 @@ $(document).ready(function() {
 
             }
         });
+    });
+
+    // change user type 
+    $('#user_type').on('change', function() {
+        if(this.value == 'student'){
+            $('#div-matric_number_imported').show();            
+            $('#div-staff_number_imported').hide();
+        }else {
+            $('#div-matric_number_imported').hide();            
+            $('#div-staff_number_imported').show();
+        }
     });
 
     // push to bim action

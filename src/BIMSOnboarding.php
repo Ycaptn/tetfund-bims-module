@@ -135,6 +135,7 @@ class BIMSOnboarding
         Route::name('bims-onboarding.')->prefix('bims-onboarding')->group(function(){
             Route::get('BIMSRecords/{BIMSRecords}/verify', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'verify'])->name('BIMSRecords.verify')->middleware('signed');
             Route::put('BIMSRecords/{BIMSRecords}/confirm', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'confirm'])->name('BIMSRecords.confirm');
+            Route::get('BIMSRecords/{BIMSRecords}/verified', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'verified'])->name('BIMSRecords.verified');
         });
     }
 

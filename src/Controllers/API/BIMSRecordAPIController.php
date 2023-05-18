@@ -119,6 +119,14 @@ class BIMSRecordAPIController extends AppBaseController
 
         // $bIMSRecord->fill($request->all());
         $bIMSRecord->fill($request->only($bIMSRecord->updatable));
+        if($bIMSRecord->user_type="student"){
+            $bIMSRecord->staff_number_imported = null;
+            $bIMSRecord->staff_number_verified = null;
+        }
+        else {
+            $bIMSRecord->matric_number_imported = null;
+            $bIMSRecord->matric_number_verified = null;
+        }
         $bIMSRecord->save();
         
         BIMSRecordUpdated::dispatch($bIMSRecord);

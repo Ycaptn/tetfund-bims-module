@@ -19,6 +19,7 @@ use TETFund\BIMSOnboarding\DataTables\BIMSRecordReportDataTable;
 
 use Hasob\FoundationCore\Controllers\BaseController;
 use Hasob\FoundationCore\Models\Organization;
+use TETFund\BIMSOnboarding\Jobs\PushRecordToBIMS;
 
 use Flash;
 
@@ -138,7 +139,17 @@ class BIMSRecordController extends BaseController
 
         // $bIMSRecord->fill($request->all());
         $bIMSRecord->fill($request->only($bIMSRecord->updatable));
+        if($bIMSRecord->user_type="student"){
+            $bIMSRecord->staff_number_imported = null;
+            $bIMSRecord->staff_number_verified = null;
+        }
+        else {
+            $bIMSRecord->matric_number_imported = null;
+            $bIMSRecord->matric_number_verified = null;
+        }
         $bIMSRecord->save();
+
+        
         
         BIMSRecordUpdated::dispatch($bIMSRecord);
         return redirect(route('bims-onboarding.BIMSRecords.index'));
@@ -172,7 +183,7 @@ class BIMSRecordController extends BaseController
         $created_records = 0;
         $duplicated_records = 0;
         $errors = [];
-
+         
         //Process each line
         if (($handle = fopen($path_to_file, "r")) !== FALSE) {
             while (false !== ($data = fgetcsv($handle, 1024))) {
@@ -186,6 +197,20 @@ class BIMSRecordController extends BaseController
                 $staff_code = trim($data[5]);
                 $matric_code = trim($data[5]);
 
+                $csv_headings = ["First Name", "Middle Name", 'Last Name', 'Email Address', 'Phone Number', 'Matric Code', 'Staff Number'];
+
+                // skip csv headings 
+                if(in_array($first_name, $csv_headings)
+                    ||in_array($middle_name, $csv_headings)
+                    || in_array($last_name, $csv_headings)
+                    || in_array($email, $csv_headings)
+                    ||in_array($phone, $csv_headings)
+                    || in_array($staff_code, $csv_headings)
+                    || in_array($matric_code, $csv_headings)
+                    && $loop == 1
+                )
+                continue;
+                
                 $valid_email = null;
                 if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     $valid_email = $email;
@@ -282,60 +307,60 @@ class BIMSRecordController extends BaseController
     /**
      * Show the form for verifying the specified resource data.
      *
-     * @param  \App\Models\Airline  $airline
+     * @param \TETFund\ThesisDigitization\DataTables\BIMSRecordReportDataTable $beneficiaryRerportDataTable
      * @return \Illuminate\Http\Response
      */
     public function verify(Organization $org, $id, Request $request)
     {
-        $current_user = Auth()->user();
 
         /** @var BIMSRecord $bIMSRecord */
         $bIMSRecord = BIMSRecord::find($id);
 
 
         if (empty($bIMSRecord) ) {
-            return redirect(route('bims-onboarding.BIMSRecords.index'));
+            return redirect(url('/'));
         }
 
-        if($bIMSRecord->is_verified){
-            return redirect(route('bims-onboarding.BIMSRecords.show', $bIMSRecord->id))->with('success', 'BIMS record verified and confirmed');
-        }
-
+        if($bIMSRecord->is_verified)
+        return redirect(route('bims-onboarding.BIMSRecords.verified', $bIMSRecord->id))->with('success', 'BIMS Record already verified');
+         
         return view('tetfund-bims-module::pages.bims_records.verify')
-                            ->with('bIMSRecord', $bIMSRecord)
-                            ->with('current_user', $current_user);
+                            ->with('bIMSRecord', $bIMSRecord);
     }
 
-    /* Show the form for verifying the specified resource data.
+    /* confim the specified resource data.
     *
-    * @param  \App\Models\Airline  $airline
+     * @param \TETFund\ThesisDigitization\DataTables\BIMSRecordReportDataTable $beneficiaryRerportDataTable
     * @return \Illuminate\Http\Response
     */
-    public function confirm(Organization $org, $id, Request $request)
+    public function confirm(Organization $org, $id, UpdateBIMSRecordRequest $request)
     {
-       $current_user = Auth()->user();
 
        /** @var BIMSRecord $bIMSRecord */
        $bIMSRecord = BIMSRecord::find($id);
 
        if (empty($bIMSRecord) ) {
-           return redirect(route('bims-onboarding.BIMSRecords.index'));
+           return redirect(url('/'));
        }
 
        if($bIMSRecord->is_verified){
-           return redirect(route('bims-onboarding.BIMSRecords.show', $bIMSRecord->id))->with('success', 'BIMS record is already verified');
+            return redirect(route('bims-onboarding.BIMSRecords.verified', $bIMSRecord->id))->with('success', 'BIMS Record verified successfully');
        }
-       $request_only_updatables = $request->only($bIMSRecord->updatable);
-
-        
-        // $bIMSRecord->fill($request->all());
-        $bIMSRecord->fill($request_only_updatables);
+        $bIMSRecord->fill($request->all());
         $bIMSRecord->save();
-            
+        
+        if($bIMSRecord->user_type="student"){
+            $bIMSRecord->staff_number_imported = null;
+            $bIMSRecord->staff_number_verified = null;
+        }
+        else {
+            $bIMSRecord->matric_number_imported = null;
+            $bIMSRecord->matric_number_verified = null;
+        }
+        
         $verified_data = $bIMSRecord->toArray();
-
         // set all verifying data to verified 
-        foreach ($request_only_updatables as $key => $request_only_updatable) {
+        foreach ($request->all() as $key => $data) {
             if(!array_key_exists($key, $verified_data))
             continue;   
             
@@ -343,7 +368,7 @@ class BIMSRecordController extends BaseController
                 $prop = substr($key, 0, strlen($key) - strlen('_imported') );
                 $prop_verified = $prop."_verified";
                 if(array_key_exists($prop_verified, $verified_data)){
-                    $verified_data[$prop_verified] = $request_only_updatable;
+                    $verified_data[$prop_verified] = $data;
                 }
             }
         }
@@ -352,15 +377,30 @@ class BIMSRecordController extends BaseController
         $bIMSRecord->update($verified_data);
 
         // set is verifed if updatable is confirmed
-        $bIMSRecord->is_verified = $bIMSRecord->is_confirmed;
-        $bIMSRecord->user_status = $bIMSRecord->is_confirmed? 'verified-by-owner' : $bIMSRecord->user_status;
+        $bIMSRecord->is_verified = true;
+        $bIMSRecord->user_status =  'verified-by-owner';
 
         $bIMSRecord->save();
+        PushRecordToBIMS::dispatch($bIMSRecord);
 
-        return redirect(route('bims-onboarding.BIMSRecords.show', $bIMSRecord->id))
-        ->with('bIMSRecord', $bIMSRecord)
-        ->with('current_user', $current_user)
-        ->with('success', 'B I M S Record verified successfully');   
+        return redirect(route('bims-onboarding.BIMSRecords.verified', $bIMSRecord->id))->with('success', 'B I M S Record verified successfully');
+    }
+
+    /* confim the specified resource data.
+    *
+    * @param \TETFund\ThesisDigitization\DataTables\BIMSRecordReportDataTable $beneficiaryRerportDataTable
+    * @return \Illuminate\Http\Response
+    */
+    public function verified(Organization $org, $id, Request $request)
+    {
+
+       /** @var BIMSRecord $bIMSRecord */
+       $bIMSRecord = BIMSRecord::find($id);
+
+       if (empty($bIMSRecord) ) {
+           return redirect(url('/'));
+       }
+        return view('tetfund-bims-module::pages.bims_records.verified');  
     }
 
     public function displayBIMSRecordRemoving(Organization $org)

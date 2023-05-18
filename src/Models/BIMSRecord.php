@@ -252,7 +252,16 @@ class BIMSRecord extends Model
                         && !is_null($this->attributes[$prop_verified]) 
                     )
                     continue;
-                    else return false;
+                    else {
+                        if ($this->user_type == 'student' && $this->attributes[$updatable] == 'staff_number_imported')
+                        continue;
+                        if ($this->user_type != 'student' && $this->attributes[$updatable] == 'matric_number_imported')
+                        continue;
+                        if($this->attributes[$updatable]!="staff_number_imported" && $this->attributes[$updatable] != 'matric_number_imported')
+                        continue;
+                        else
+                            return false;
+                    }
                 }
 
                 else {

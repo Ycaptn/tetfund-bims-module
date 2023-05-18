@@ -106,7 +106,7 @@ BIMS Onboarding Records
         <div class="card-body">
         
             <p>
-                To onboard records on BIMS, you can use an CSV file using MS Excel is a specified format. This is the fastest way to import your records.Download sample CSV file, open it in MS Excel add your records, then upload it here.
+            To onboard records to BIMS, you can use a CSV file in a specified format using MS Excel. This is the fastest way to import your records. To get started, download the sample CSV file, open it in MS Excel, add your records, and then upload it here.
                 <a href="{{ asset('bims-record.csv') }}" target="_blank">Download Sample CSV File</a>
             </p>
 

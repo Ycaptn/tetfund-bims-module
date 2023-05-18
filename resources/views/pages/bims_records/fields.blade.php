@@ -154,7 +154,13 @@
         {!! Form::text('name_suffix_imported', null, ['id'=>'name_suffix_imported', 'class' => 'form-control','maxlength' => 300,]) !!}
     </div>
 </div>
-
+<!-- User Type Field -->
+<div id="div-user_type" class="form-group col-lg-6 mb-1">
+    <label for="user_type" class="col-lg-12 col-form-label">User Type Imported</label>
+    <div class="col-lg-12">
+        {!! Form::select('user_type', ['student'=>'student','academic'=>'academic','non-academic'=>'non-academic', null=>'other' ], null, ['id'=>'user_type', 'class' => 'form-select','maxlength' => 100]) !!}
+    </div>
+</div>
 <!-- Matric Number Imported Field -->
 <div id="div-matric_number_imported" class="form-group col-lg-6 mb-1">
     <label for="matric_number_imported" class="col-lg-12 col-form-label">Matric Number Imported</label>
@@ -235,13 +241,7 @@
     </div>
 </div>
 
-<!-- User Type Field -->
-<div id="div-user_type" class="form-group col-lg-6 mb-1">
-    <label for="user_type" class="col-lg-12 col-form-label">User Type Imported</label>
-    <div class="col-lg-12">
-        {!! Form::select('user_type', ['student'=>'student','academic'=>'academic','non-academic'=>'non-academic', null=>'other' ], null, ['id'=>'user_type', 'class' => 'form-select','maxlength' => 100]) !!}
-    </div>
-</div>
+
 
 <!-- Admin Entered Record Issues Field -->
 <div id="div-admin_entered_record_issues" class="form-group col-lg-12 mb-1">
@@ -268,6 +268,16 @@
         updatable = bims_record['updatable'] ?? []
         editable =  bims_record['editable'] ?? []
         
+        user_type = bims_record['user_type']?? '';
+
+        if(user_type == 'student'){
+            $('#div-matric_number_imported').show();            
+            $('#div-staff_number_imported').hide();
+        }else {
+            $('#div-matric_number_imported').hide();            
+            $('#div-staff_number_imported').show();
+        }
+        
         let indicateVerificationStatus = function(property, imported="_imported", verifed="_verified" ){
             if(property.endsWith(imported)){
                 prop = property.substr(0, property.length - imported.length)
@@ -285,10 +295,10 @@
         };
             
         for(const property in bims_record ){
-
+           
             input_field = $("#".concat(property))
             div_parent_input = $("#div-".concat(property))
-
+            
             if(!editable.includes(property)){
                 if(typeof div_parent_input != 'undefined'){
                     div_parent_input.hide();
