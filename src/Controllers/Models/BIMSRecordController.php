@@ -20,6 +20,8 @@ use TETFund\BIMSOnboarding\DataTables\BIMSRecordReportDataTable;
 use Hasob\FoundationCore\Controllers\BaseController;
 use Hasob\FoundationCore\Models\Organization;
 use TETFund\BIMSOnboarding\Jobs\PushRecordToBIMS;
+use TETFund\BIMSOnboarding\Jobs\RemoveRecordFromBIMS;
+use Illuminate\Database\Eloquent\Builder;
 
 use Flash;
 
@@ -197,7 +199,7 @@ class BIMSRecordController extends BaseController
                 $staff_code = trim($data[5]);
                 $matric_code = trim($data[5]);
 
-                $csv_headings = ["First Name", "Middle Name", 'Last Name', 'Email Address', 'Phone Number', 'Matric Code', 'Staff Number'];
+                $csv_headings = ["First Name", "Middle Name", 'Last Name', 'Email Address', 'Phone Number', 'Matric Code', 'Staff Code'];
 
                 // skip csv headings 
                 if(in_array($first_name, $csv_headings)
@@ -404,38 +406,83 @@ class BIMSRecordController extends BaseController
     }
 
     public function displayBIMSRecordRemoving(Organization $org)
-    { $current_user = Auth()->user();
+    {   $current_user = Auth()->user();
         $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
-
-        $cdv_bims_records = new \Hasob\FoundationCore\View\Components\CardDataView(BIMSRecord::class, "tetfund-bims-module::pages.bims_records.card_view_item");
-        $cdv_bims_records->setDataQuery(['organization_id'=>$org->id])
-            ->setDataQuery(['is_verified'=>true])
-            ->setDataQuery(['user_status'=>'bims-active'])
-            ->addDataGroup('All','deleted_at',null)
-            ->addDataGroup('Academic Staff','user_type','academic')
-            ->addDataGroup('Non Academic','user_type','non-academic')
-            ->addDataGroup('Student','user_type','student')
-            ->addDataGroup('Others','user_type',null)
-            ->setSearchFields([
-                "first_name_imported","middle_name_imported","last_name_imported","name_title_imported","name_suffix_imported","matric_number_imported","staff_number_imported","email_imported","phone_imported","phone_network_imported","bvn_imported","nin_imported",
-                "first_name_verified","middle_name_verified","last_name_verified","name_title_verified","name_suffix_verified","matric_number_verified","staff_number_verified","email_verified","phone_verified","phone_network_verified","bvn_verified","nin_verified",
-            ])->enableSearch(true)
-            ->enablePagination(true)
-            ->setPaginationLimit(30)
-            ->setSearchPlaceholder('Search BIMS Onboarding Records');
-
-        if (request()->expectsJson()){
-            return $cdv_bims_records->render();
-        }
 
         return view('tetfund-bims-module::pages.bims_records.remove')
         ->with('current_user', $current_user)
-        ->with('beneficiary', optional($beneficiary_member)->beneficiary)
-        ->with('months_list', BaseController::monthsList())
-        ->with('states_list', BaseController::statesList())
-        ->with('cdv_bims_records', $cdv_bims_records);
+        ->with('organization', optional($current_user)->organization)
+        ->with('beneficiary', optional($beneficiary_member)->beneficiary);
 
     }
-   
+
+    public function processBulkRemove(Organization $org, Request $request){
+
+        $current_user = Auth()->user();
+        $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
+        $bIMSRecordList = $request->bIMSRecordList;
+
+        // clean up input
+        $bIMSRecordList = stripslashes($bIMSRecordList);
+        $bIMSRecordList = strip_tags($bIMSRecordList);
+        $bIMSRecordList = str_replace(array("\n", "\r"), ' ', $bIMSRecordList);
+        $bIMSRecordList = explode(' ', $bIMSRecordList);
+        $bIMSRecordList = array_unique($bIMSRecordList);
+
+        $bIMSRecordList = array_filter($bIMSRecordList, function($value){
+            return $value !== "";
+        });
+
+        $seenBIMSRecords = "";
+        $removed_records = 0;
+
+        foreach ($bIMSRecordList as $key => $value) {
+            if(str_contains(strtolower($seenBIMSRecords), strtolower($value)))
+            continue;
+
+            $bIMSRecord = BIMSRecord::where('user_status', 'bims-active')
+            ->where(function (Builder $query) use($value){
+                return $query->where('email_imported', $value)
+                ->orWhere('email_verified', $value)
+                ->orWhere('phone_imported', $value)
+                ->orWhere('phone_verified', $value)
+                ->orWhere('staff_number_imported', $value)
+                ->orWhere('staff_number_verified', $value)
+                ->orWhere('matric_number_imported', $value)
+                ->orWhere('matric_number_verified', $value);
+            }) ->first();
+
+            if(is_null($bIMSRecord))
+                continue;
+                
+            $removed_records++;
+
+            $seenBIMSRecords .=$removed_records.") ";
+            $seenBIMSRecords.= strlen($bIMSRecord->first_name_verfied) >0? $bIMSRecord->first_name_verfied: $bIMSRecord->first_name_imported;
+            $seenBIMSRecords.=" ";
+            $seenBIMSRecords.= strlen($bIMSRecord->middle_name_verfied) >0? $bIMSRecord->middle_name_verfied: $bIMSRecord->middle_name_imported;
+            $seenBIMSRecords.=" ";
+            $seenBIMSRecords.= strlen($bIMSRecord->last_name_verfied) >0? $bIMSRecord->last_name_verfied: $bIMSRecord->last_name_imported; 
+            $seenBIMSRecords.=" ";
+            $seenBIMSRecords.= strlen($bIMSRecord->phone_verfied) >0? $bIMSRecord->phone_verfied: $bIMSRecord->phone_imported;
+            $seenBIMSRecords.=" ";
+            $seenBIMSRecords.= strlen($bIMSRecord->email_verfied) >0? $bIMSRecord->email_verfied: $bIMSRecord->email_imported;
+            $seenBIMSRecords.=" ";
+
+            if($bIMSRecord->user_type=='student')
+                $seenBIMSRecords.= strlen($bIMSRecord->matric_number_verfied) >0? $bIMSRecord->matric_number_verfied: $bIMSRecord->matric_number_imported;
+            else
+            $seenBIMSRecords.= strlen($bIMSRecord->staff_number_verfied) >0? $bIMSRecord->staff_number_verfied: $bIMSRecord->staff_number_imported;
+            $seenBIMSRecords.=PHP_EOL."</br>";
+
+            RemoveRecordFromBIMS::dispatch($bIMSRecord);
+
+        }
+
+        return $this->sendResponse(
+            $seenBIMSRecords, 
+            "Bulk remove completed successfully - {$removed_records} records removed."
+        ); 
+    }
 
 }

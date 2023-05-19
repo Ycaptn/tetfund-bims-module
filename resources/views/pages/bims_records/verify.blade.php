@@ -48,11 +48,11 @@
 
         <div class="flex justify-center" style="margin-top: 15px;" >      
             <div class=" bg-white shadow-md border border-blue-300 rounded-md w-full md:w-2/4 z-10 px-8 pt-6 pb-8 mb-4" >                
-            <h3 class="mb-0 text-2xl font-semibold leading-tight md:text-3xl text-center" style="color:green;">
-                B I M S Record verification
+            <h3 class="mb-0 text-3xl font-semibold leading-tight md:text-5xl text-center" style="color:green;">
+                BIMS Record verification
             </h3>
                 <p class="pt-2 mb-2 text-sm" style="color:green; font-size:80%">
-                   <i> Please <b>verify</b> and <b>confirm</b> your data on BIM Record </i>
+                   Please <b>verify</b> and <b>confirm</b> your data on BIM Record 
                 </p>
                 <!-- form to be toggled -->
                 <div class=""> 
@@ -123,31 +123,55 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="mb-4">
-                                <label class="block text-gray-500 text-sm font-bold p-2 mb-2 " for="{{$bIMSRecord->user_type=='student'? 'matric_number_imported' : 'staff_number_imported'}}">
-                                    {{ $bIMSRecord->user_type=="student"? __('Matric Number') : __('Staff Number') }}
-                                </label>
-                                <input 
-                                        type="text" 
-                                        id="{{$bIMSRecord->user_type=='student'? 'matric_number_imported' : 'staff_number_imported'}}" 
-                                        class="shadow appearance-none border rounded py-2 px-2 w-full md:w-full text-gray-700 @error('email') is-invalid @enderror" 
-                                        name="{{$bIMSRecord->user_type=='student'? 'matric_number_imported' : 'staff_number_imported'}}" 
-                                        value= "{{ $bIMSRecord->user_type=='student'? old('matric_number_imported')?? $bIMSRecord->matric_number_imported  : old('staff_number_imported')?? $bIMSRecord->staff_number_imported }}" 
-                                        required 
-                                        autocomplete="{{$bIMSRecord->user_type=='student'? 'matric_number_imported' : 'staff_number_imported'}}" 
-                                        placeholder= "{{$bIMSRecord->user_type=='student'? 'enter your matric number' : 'enter your staff number'}}"
-                                        autofocus 
-                                    >
-                                @if($bIMSRecord->user_type=='student')
-                                    @error('matric_number_imported')
+                            <div 
+                                style="display: grid; grid-template-columns: repeat( auto-fit, minmax(250px, 1fr) ); column-gap: 10px; "
+                                class="" 
+                            >
+                                <div class="mb-4">
+                                    <label class="block text-gray-500 text-sm font-bold p-2 mb-2 " for="{{$bIMSRecord->user_type=='student'? 'matric_number_imported' : 'staff_number_imported'}}">
+                                        {{ $bIMSRecord->user_type=="student"? __('Matric Number') : __('Staff Number') }}
+                                    </label>
+                                    <input 
+                                            type="text" 
+                                            id="{{$bIMSRecord->user_type=='student'? 'matric_number_imported' : 'staff_number_imported'}}" 
+                                            class="shadow appearance-none border rounded py-2 px-2 w-full md:w-full text-gray-700 @error($bIMSRecord->user_type=='student'? 'matric_number_imported' : 'staff_number_imported') is-invalid @enderror" 
+                                            name="{{$bIMSRecord->user_type=='student'? 'matric_number_imported' : 'staff_number_imported'}}" 
+                                            value= "{{ $bIMSRecord->user_type=='student'? old('matric_number_imported')?? $bIMSRecord->matric_number_imported  : old('staff_number_imported')?? $bIMSRecord->staff_number_imported }}" 
+                                            required 
+                                            autocomplete="{{$bIMSRecord->user_type=='student'? 'matric_number_imported' : 'staff_number_imported'}}" 
+                                            placeholder= "{{$bIMSRecord->user_type=='student'? 'enter your matric number' : 'enter your staff number'}}"
+                                            autofocus 
+                                        >
+                                    @if($bIMSRecord->user_type=='student')
+                                        @error('matric_number_imported')
+                                        <p class="text-sm text-red-600 dark:text-red-500" style="color:red">{{$message}}</p>
+                                        @enderror
+                                    @else 
+                                        @error('staff_number_imported')
+                                        <p class="text-sm text-red-600 dark:text-red-500" style="color:red">{{$message}}</p>
+                                        @enderror
+                                    @endif
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-500 text-sm font-bold p-2 mb-2 " for="email_imported">
+                                        {{ __('E-Mail Address') }}
+                                    </label>
+                                    <input 
+                                            type="email" 
+                                            id="email" 
+                                            class="shadow appearance-none border rounded py-2 px-2 w-full md:w-full text-gray-700 @error('email_imported') is-invalid @enderror" 
+                                            name="email_imported" 
+                                            value= "{{ old('email_imported')?? $bIMSRecord->email_imported }}" 
+                                            required 
+                                            autocomplete="email" 
+                                            autofocus 
+                                            placeholder="example@mail.com"
+                                        >
+                                    @error('email_imported')
                                     <p class="text-sm text-red-600 dark:text-red-500" style="color:red">{{$message}}</p>
                                     @enderror
-                                @else 
-                                    @error('staff_number_imported')
-                                    <p class="text-sm text-red-600 dark:text-red-500" style="color:red">{{$message}}</p>
-                                    @enderror
-                                @endif
-                            </div>
+                                </div>
+                            </div>  
                             
                             <div 
                                 style="display: grid; grid-template-columns: repeat( auto-fit, minmax(250px, 1fr) ); column-gap: 10px; "
@@ -178,9 +202,9 @@
                                         {{ __('Gender') }}
                                     </label>
                                     <select name="gender_imported" id="gender_imported" required     
-                                        class="shadow appearance-none border rounded py-2 px-2 w-full md:w-full text-gray-700 @error('email') is-invalid @enderror" 
+                                        class="shadow appearance-none border rounded py-2 px-2 w-full md:w-full text-gray-700 @error('gender_imported') is-invalid @enderror" 
                                     >
-                                        <option value=""></option>
+                                        <option value="">Select gender</option>
                                         <option value="{{(old('gender_imported')=='M' || $bIMSRecord->dob_imported=='M')? 'M':'M' }}" {{(old('gender_imported')=='M' || $bIMSRecord->gender_imported=='M')? 'Selected':'' }}>
                                             {{(old('gender_imported')=='M' || $bIMSRecord->gender_imported=='M')? 'Male':'Male' }}
                                         </option>
@@ -222,7 +246,7 @@
                                     <select name="phone_network_imported" id="phone_network_imported"     
                                         class="shadow appearance-none border rounded py-2 px-2 w-full md:w-full text-gray-700 @error('phone_network_imported') is-invalid @enderror" 
                                     >
-                                        <option value=""></option>
+                                        <option value="">Select phone network</option>
                                         <option value="{{(old('phone_network_imported')=='9Mobile' || $bIMSRecord->phone_network_imported=='9Mobile')? '9Mobile':'9Mobile' }}" {{(old('phone_network_imported')=='9Mobile' || $bIMSRecord->phone_network_imported=='9Mobile')? 'Selected':'' }}>
                                             {{(old('phone_network_imported')=='9Mobile' || $bIMSRecord->phone_network_imported=='9Mobile')? '9Mobile':'9Mobile' }}
                                         </option>
@@ -276,34 +300,15 @@
                                             name="bvn_imported" 
                                             value= "{{ old('bvn_imported')?? $bIMSRecord->bvn_imported }}" 
                                             required 
-                                            autocomplete="email" 
+                                            autocomplete="bvn_imported" 
                                             autofocus 
-                                            placeholder="bvn"
+                                            placeholder="BVN"
                                         >
                                     @error('bvn_imported')
                                     <p class="text-sm text-red-600 dark:text-red-500" style="color:red">{{$message}}</p>
                                     @enderror
                                 </div>
                             </div>
-                            <div class="mb-4">
-                                <label class="block text-gray-500 text-sm font-bold p-2 mb-2 " for="email_imported">
-                                    {{ __('E-Mail Address') }}
-                                </label>
-                                <input 
-                                        type="email" 
-                                        id="email" 
-                                        class="shadow appearance-none border rounded py-2 px-2 w-full md:w-full text-gray-700 @error('email_imported') is-invalid @enderror" 
-                                        name="email_imported" 
-                                        value= "{{ old('email_imported')?? $bIMSRecord->email_imported }}" 
-                                        required 
-                                        autocomplete="email" 
-                                        autofocus 
-                                        placeholder="example@mail.com"
-                                    >
-                                @error('email_imported')
-                                <p class="text-sm text-red-600 dark:text-red-500" style="color:red">{{$message}}</p>
-                                @enderror
-                            </div>  
                             
                         <div class=" pt-3 md:w-2/4">
                             <button class="bg-green hover:bg-limegreen-500 text-white font-bold py-2 px-5 rounded" type="submit">

@@ -6,12 +6,13 @@ B I M S Record Verification Request
 
 @endcomponent
 
-Dear {{$bIMSRecord->first_name_imported}}, we kindly ask you to verify the data in your BIM record by following the link provided below.
-
-@component('mail::button', ['url' => $url])
- Verify
-@endcomponent
-
-Thanks.<br/>
-
+Dear {{$bIMSRecord->first_name_imported}}, 
+<br/> Your details have been sent to TETFUND for onboarding to the BIMS Platform
+<br/>Please kindly follow this link to verify your records. 
+<br>
+<a href="{{$url}}" target="_blank"><small>{{ $url}}</small></a>
+<br/>
+<br/>
+Thank you.<br/>
+TETFUND Beneficiary Portal
 @endcomponent

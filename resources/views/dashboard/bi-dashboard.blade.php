@@ -99,7 +99,7 @@ BIMS Identities Onboarding
                             <a href="{{route('bims-onboarding.bi-import')}}" class="btn btn-sm btn-primary bg-olive mx-1" title="Onboard">
                                 <i class="bx bx-import"></i> Onboard
                             </a>
-                            <a href="#" class="btn btn-sm btn-primary bg-olive mx-1" title="Remove">
+                            <a href="{{route('bims-onboarding.bi-remove')}}" class="btn btn-sm btn-primary bg-olive mx-1" title="Remove">
                                 <i class="bx bx-export"></i> Remove 
                             </a>
                         </div>
