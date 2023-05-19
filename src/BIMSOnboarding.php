@@ -90,15 +90,15 @@ class BIMSOnboarding
                     }
 
                     if ($current_user->hasAnyRole(['admin'])){
-                        $fc_menu['mnu_bims_dashboard']['children']["mnu_bims_dashboard_admin"] = [
-                            'id'=>"mnu_bims_dashboard_admin",
-                            'label'=>"BIMS Management",
-                            'icon'=>'bx bx-briefcase',
-                            'path'=> route('bims-onboarding.admin-dashboard'),
-                            'route-selector'=>'bims-onboarding/admin*',
-                            'is-parent'=>false,
-                            'children' => []
-                        ];
+                        // $fc_menu['mnu_bims_dashboard']['children']["mnu_bims_dashboard_admin"] = [
+                        //     'id'=>"mnu_bims_dashboard_admin",
+                        //     'label'=>"BIMS Management",
+                        //     'icon'=>'bx bx-briefcase',
+                        //     'path'=> route('bims-onboarding.admin-dashboard'),
+                        //     'route-selector'=>'bims-onboarding/admin*',
+                        //     'is-parent'=>false,
+                        //     'children' => []
+                        // ];
                         $fc_menu['mnu_bims_dashboard']['children']["mnu_td_bim_record_report_admin"] = [
                             'id'=>'mnu_td_bim_record_report',
                             'label'=>'BIMS Record Report',

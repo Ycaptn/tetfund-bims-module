@@ -84,6 +84,7 @@ class BIMSRecordReportDataTable extends DataTable
             \DB::raw('SUM(CASE WHEN `user_type` = \'other\' THEN 1 ELSE 0 END) AS "Other"'),
             \DB::raw('SUM(CASE WHEN `is_verified` = \'0\' THEN 1 ELSE 0 END) AS "Unverified"'),
             \DB::raw('SUM(CASE WHEN `is_verified` = \'1\' THEN 1 ELSE 0 END) AS "Verified"'),
+            \DB::raw('SUM(CASE WHEN `is_verified` = \'1\' THEN 1 ELSE 0 END) AS "is_verified"'),
             \DB::raw('Count(id) AS "Total Records"')
         )->groupBy('beneficiary_id');
     }
