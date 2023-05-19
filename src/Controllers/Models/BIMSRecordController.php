@@ -351,7 +351,7 @@ class BIMSRecordController extends BaseController
         $bIMSRecord->fill($request->all());
         $bIMSRecord->save();
         
-        if($bIMSRecord->user_type="student"){
+        if($bIMSRecord->user_type=="student"){
             $bIMSRecord->staff_number_imported = null;
             $bIMSRecord->staff_number_verified = null;
         }
