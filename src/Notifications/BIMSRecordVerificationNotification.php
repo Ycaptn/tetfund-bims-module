@@ -47,12 +47,8 @@ class BIMSRecordVerificationNotification extends Notification implements ShouldQ
      */
     public function toMail($notifiable)
     {
-        /**
-         *  Generate a temporal signed link to expire in 2880 mins (2 days)
-         * 
-         *  @var string $url
-         */
-        $url = URL::temporarySignedRoute('bims-onboarding.BIMSRecords.verify', now()->addMinutes(2880), ['BIMSRecords' => $this->bIMSRecord->id]);
+       
+        $url = URL::signedRoute('bims-onboarding.BIMSRecords.verify', ['BIMSRecords' => $this->bIMSRecord->id]);
         
         return (new MailMessage)->subject('BIMSRecord Verification')
                                 ->markdown(

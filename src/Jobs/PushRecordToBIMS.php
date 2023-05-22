@@ -54,9 +54,9 @@ class PushRecordToBIMS implements ShouldQueue
             'unique_id' => $this->bIMSRecord->id,
             'first_name' => $this->bIMSRecord->first_name_verified,
             'last_name' => $this->bIMSRecord->last_name_verified,
-            'email' => $this->bIMSRecord->email_verifed,
-            'phone' => $this->bIMSRecord->phone_number_verified,
-            'gender' => $this->bIMSRecord->gender,
+            'email' => $this->bIMSRecord->email_verified,
+            'phone' => $this->bIMSRecord->phone_verified,
+            'gender' => $this->bIMSRecord->gender_verified,
             'type' => $this->bIMSRecord->user_type == 'student' ? "STUDENT" : "LECTURER",
         ),
         CURLOPT_HTTPHEADER => array(
@@ -77,8 +77,8 @@ class PushRecordToBIMS implements ShouldQueue
         $data = $response['data'] ?? [];
         
         // if ($status== true || $status == 1)
-        $this->attemptBIMRecordActivation(null, $message);
-      
+            $this->attemptBIMRecordActivation(null, $message);
+        // We have sent you a special link to verify your email.
     }
 
     /**

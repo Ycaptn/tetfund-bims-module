@@ -182,8 +182,8 @@ class BIMSRecordController extends BaseController
         $path_to_file = public_path('uploads').'/'.$attachedFileName;
 
         $loop = 1;
-        $created_records = 0;
-        $duplicated_records = 0;
+        $created_records_counter = 0;
+        $duplicated_records_counter = 0;
         $errors = [];
          
         //Process each line
@@ -254,8 +254,9 @@ class BIMSRecordController extends BaseController
                     (str_contains($request->user_type,"student") && BIMSRecord::where('matric_number_verified',$matric_code)->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)->count()>0)){
 
                     //duplicate record detected.
-                    //$errors []= "Duplicate record detected for {$first_name} {$middle_name} {$last_name} {$email} {$valid_telephone}";
-                    $duplicated_records++;
+                        //Duplicated Records not created
+                    //$errors []= ."{$first_name} {$middle_name} {$last_name} {$email} {$valid_telephone}";
+                    $duplicated_records_counter++;
 
                 } else {
 
@@ -275,7 +276,7 @@ class BIMSRecordController extends BaseController
                     
                     BIMSRecordCreated::dispatch($bims_record);
 
-                    $created_records++;
+                    $created_records_counter++;
                 }
 
                 //Save the record.
@@ -289,8 +290,8 @@ class BIMSRecordController extends BaseController
             return $this->sendError($this->array_flatten($errors), 'Errors processing file');
         }
         return $this->sendResponse(
-            $created_records, 
-            "Bulk Onboarding completed successfully - {$created_records} new records saved, {$duplicated_records} duplicate records."
+            $created_records_counter, 
+            "Bulk Onboarding completed successfully - {$created_records_counter} new records saved, {$duplicated_records_counter} duplicate records."
         );
     }
 
