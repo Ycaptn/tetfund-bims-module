@@ -9,7 +9,7 @@ BIMS Identities Onboarding
 @stop
 
 @section('page_title_suffix')
-{{ $beneficiary->full_name }}
+{{ $beneficiary->full_name?? "" }}
 @stop
 
 @section('page_title_subtext')
