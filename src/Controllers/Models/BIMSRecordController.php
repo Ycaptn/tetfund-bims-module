@@ -38,7 +38,7 @@ class BIMSRecordController extends BaseController
         $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
 
         $cdv_bims_records = new \Hasob\FoundationCore\View\Components\CardDataView(BIMSRecord::class, "tetfund-bims-module::pages.bims_records.card_view_item");
-        $cdv_bims_records->setDataQuery(['organization_id'=>$org->id])
+        $cdv_bims_records->setDataQuery(['organization_id'=>$org->id,'beneficiary_id'=>optional($beneficiary_member)->beneficiary_id])
                         ->addDataGroup('All','deleted_at',null)
                         ->addDataGroup('Academic Staff','user_type','academic')
                         ->addDataGroup('Non Academic','user_type','non-academic')
