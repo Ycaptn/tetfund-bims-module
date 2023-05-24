@@ -445,6 +445,7 @@ class BIMSRecordController extends BaseController
             continue;
 
             $bIMSRecord = BIMSRecord::where('user_status', 'bims-active')
+            ->where('beneficiary_id',optional($beneficiary_member)->beneficiary_id)
             ->where(function (Builder $query) use($value){
                 return $query->where('email_imported', $value)
                 ->orWhere('email_verified', $value)
