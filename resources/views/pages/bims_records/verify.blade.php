@@ -270,7 +270,7 @@
                                 style="display: grid; grid-template-columns: repeat( auto-fit, minmax(250px, 1fr) ); column-gap: 10px; "
                                 class="" 
                             >
-
+                                
                                 <div class="mb-4">
                                     <label class="block text-gray-500 text-sm font-bold p-2 mb-2 " for="username">
                                         {{ __('NIN') }}
@@ -289,6 +289,7 @@
                                     <p class="text-sm text-red-600 dark:text-red-500" style="color:red">{{$message}}</p>
                                     @enderror
                                 </div>
+                                {{--
                                 <div class="mb-4">
                                     <label class="block text-gray-500 text-sm font-bold p-2 mb-2 " for="bvn_imported">
                                         {{ __('BVN') }}
@@ -299,7 +300,6 @@
                                             class="shadow appearance-none border rounded py-2 px-2 w-full md:w-full text-gray-700 @error('bvn_imported') is-invalid @enderror" 
                                             name="bvn_imported" 
                                             value= "{{ old('bvn_imported')?? $bIMSRecord->bvn_imported }}" 
-                                            required 
                                             autocomplete="bvn_imported" 
                                             autofocus 
                                             placeholder="BVN"
@@ -308,6 +308,7 @@
                                     <p class="text-sm text-red-600 dark:text-red-500" style="color:red">{{$message}}</p>
                                     @enderror
                                 </div>
+                                --}}
                             </div>
                             
                         <div class=" pt-3 md:w-2/4">
