@@ -49,7 +49,7 @@
         <div class="flex justify-center" style="margin-top: 15px;" >      
             <div class=" bg-white shadow-md border border-blue-300 rounded-md w-full md:w-2/4 z-10 px-8 pt-6 pb-8 mb-4" >                
             <h3 class="mb-0 text-3xl font-semibold leading-tight md:text-5xl text-center" style="color:green;">
-                BIMS Record verification
+                BIMS Record Verification
             </h3>
                 <p class="pt-2 mb-2 text-sm" style="color:green; font-size:80%">
                    Please <b>verify</b> and <b>confirm</b> your data on BIM Record 
