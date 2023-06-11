@@ -187,7 +187,7 @@ class BIMSRecordController extends BaseController
         $current_user = Auth()->user();
         $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
 
-        $attachedFileName = time() . '.' . $request->file->getClientOriginalExtension();
+        $attachedFileName = $beneficiary_member->beneficiary_id . '.' . time() . '.' . $request->file->getClientOriginalExtension();
         $request->file->move(public_path('uploads'), $attachedFileName);
         $path_to_file = public_path('uploads').'/'.$attachedFileName;
 
