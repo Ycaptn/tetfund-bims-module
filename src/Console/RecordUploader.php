@@ -128,21 +128,29 @@ class RecordUploader extends Command
 
                 } else {
 
-                    $bims_record =  BIMSRecord::create([
-                        'organization_id'=>$beneficiary->organization_id,
-                        'beneficiary_id'=>$beneficiary->id,
-                        'first_name_imported'=>$first_name,
-                        'middle_name_imported'=>$middle_name,
-                        'last_name_imported'=>$last_name,
-                        'phone_imported'=>$valid_telephone,
-                        'email_imported'=>$email,
-                        'staff_number_imported' => (str_contains($record_type,"academic") ? $staff_code : null),
-                        'matric_number_imported' => (str_contains($record_type,"student") ? $matric_code : null),
-                        'user_status' => 'new-import',
-                        'user_type' => $record_type,
-                    ]);
-                    $created_records_counter++;
-                    echo "{$created_records_counter} Record added for {$last_name}, {$first_name} - {$email} \n";
+                    try{
+
+                        $bims_record =  BIMSRecord::create([
+                            'organization_id'=>$beneficiary->organization_id,
+                            'beneficiary_id'=>$beneficiary->id,
+                            'first_name_imported'=>$first_name,
+                            'middle_name_imported'=>$middle_name,
+                            'last_name_imported'=>$last_name,
+                            'phone_imported'=>$valid_telephone,
+                            'email_imported'=>$email,
+                            'staff_number_imported' => (str_contains($record_type,"academic") ? $staff_code : null),
+                            'matric_number_imported' => (str_contains($record_type,"student") ? $matric_code : null),
+                            'user_status' => 'new-import',
+                            'user_type' => $record_type,
+                        ]);
+                        $created_records_counter++;
+                        echo "{$created_records_counter} Record added for {$last_name}, {$first_name} - {$email} \n";
+
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                        \Log::error($th);
+                    }
+
                 }
 
                 //Save the record.

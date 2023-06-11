@@ -276,23 +276,29 @@ class BIMSRecordController extends BaseController
 
                 } else {
 
-                    $bims_record =  BIMSRecord::create([
-                        'organization_id'=>$current_user->organization_id,
-                        'beneficiary_id'=>$beneficiary_member->beneficiary_id,
-                        'first_name_imported'=>$first_name,
-                        'middle_name_imported'=>$middle_name,
-                        'last_name_imported'=>$last_name,
-                        'phone_imported'=>$valid_telephone,
-                        'email_imported'=>$email,
-                        'staff_number_imported' => (str_contains($request->user_type,"academic") ? $staff_code : null),
-                        'matric_number_imported' => (str_contains($request->user_type,"student") ? $matric_code : null),
-                        'user_status' => 'new-import',
-                        'user_type' => $request->user_type,
-                    ]);
-                    
-                    BIMSRecordCreated::dispatch($bims_record);
+                    try{
 
-                    $created_records_counter++;
+                        $bims_record =  BIMSRecord::create([
+                            'organization_id'=>$current_user->organization_id,
+                            'beneficiary_id'=>$beneficiary_member->beneficiary_id,
+                            'first_name_imported'=>$first_name,
+                            'middle_name_imported'=>$middle_name,
+                            'last_name_imported'=>$last_name,
+                            'phone_imported'=>$valid_telephone,
+                            'email_imported'=>$email,
+                            'staff_number_imported' => (str_contains($request->user_type,"academic") ? $staff_code : null),
+                            'matric_number_imported' => (str_contains($request->user_type,"student") ? $matric_code : null),
+                            'user_status' => 'new-import',
+                            'user_type' => $request->user_type,
+                        ]);
+                        
+                        BIMSRecordCreated::dispatch($bims_record);
+                        $created_records_counter++;
+
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                        \Log::error($th);
+                    }
                 }
 
                 //Save the record.
