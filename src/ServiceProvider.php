@@ -49,6 +49,13 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
         
         Blade::componentNamespace('TETFund\\BIMSOnboarding\\View\\Components', 'tetfund-bims-module');
+
+        // Register the available commands if we are using the application via the CLI
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \TETFund\BIMSOnboarding\Console\RecordUploader::class,
+            ]);
+        }
     }
 
     /**
