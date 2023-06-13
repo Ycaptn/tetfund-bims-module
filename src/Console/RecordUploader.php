@@ -23,6 +23,7 @@ use TETFund\BIMSOnboarding\Models\BIMSRecord;
 use Hasob\FoundationCore\Models\Organization;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
 
 class RecordUploader extends Command
 {
@@ -113,14 +114,51 @@ class RecordUploader extends Command
 
                 //Check if the record is being duplicated
                 //if the matric number exists, or if the phone exists, and if the email address exists
-                if ( (empty($email)==false && BIMSRecord::where('email_imported',$email)->where('beneficiary_id',optional($beneficiary)->id)->count()>0) || 
-                     (empty($valid_telephone)==false && BIMSRecord::where('phone_imported',$valid_telephone)->where('beneficiary_id',optional($beneficiary)->id)->count()>0) || 
-                     (empty($staff_code)==false && str_contains($record_type,"academic") && BIMSRecord::where('staff_number_imported',$staff_code)->where('beneficiary_id',optional($beneficiary)->id)->count()>0) || 
-                     (empty($matric_code)==false && str_contains($record_type,"student") && BIMSRecord::where('matric_number_imported',$matric_code)->where('beneficiary_id',optional($beneficiary)->id)->count()>0) || 
-                     (empty($email)==false && BIMSRecord::where('email_verified',$email)->where('beneficiary_id',optional($beneficiary)->id)->count()>0) || 
-                     (empty($valid_telephone)==false && BIMSRecord::where('phone_verified',$valid_telephone)->where('beneficiary_id',optional($beneficiary)->id)->count()>0) || 
-                     (empty($staff_code)==false && str_contains($record_type,"academic") && BIMSRecord::where('staff_number_verified',$staff_code)->where('beneficiary_id',optional($beneficiary)->id)->count()>0) || 
-                     (empty($matric_code)==false && str_contains($record_type,"student") && BIMSRecord::where('matric_number_verified',$matric_code)->where('beneficiary_id',optional($beneficiary)->id)->count()>0)){
+
+                // code optimization using query builder
+                $query = BIMSRecord::where('beneficiary_id', optional($beneficiary_member)->beneficiary_id);
+
+                if (!empty($email)) {
+                    $query->where(function (Builder $query) use ($email) {
+                        $query->where('email_imported', $email)
+                            ->orWhere('email_verified', $email);
+                    });
+                }
+ 
+                if (!empty($valid_telephone)) {
+                    $query->where(function (Builder $query) use ($valid_telephone) {
+                        $query->where('phone_imported', $valid_telephone)
+                            ->orWhere('phone_verified', $valid_telephone);
+                    });
+                }
+
+                if (!empty($staff_code) && str_contains($request->user_type, "academic")) {
+                    $query->where(function (Builder $query) use ($staff_code) {
+                        $query->where('staff_number_imported', $staff_code)
+                            ->orWhere('staff_number_verified', $staff_code);
+                    });
+                }
+
+                if (!empty($matric_code) && str_contains($request->user_type, "student")) {
+                    $query->where(function (Builder $query) use ($matric_code) {
+                        $query->where('matric_number_imported', $matric_code)
+                            ->orWhere('matric_number_verified', $matric_code);
+                    });
+                }
+ 
+
+                if ( 
+                    $query->count() > 0
+                    // (empty($email)==false && BIMSRecord::where('email_imported',$email)->where('beneficiary_id',optional($beneficiary)->id)->count()>0) || 
+                    // (empty($valid_telephone)==false && BIMSRecord::where('phone_imported',$valid_telephone)->where('beneficiary_id',optional($beneficiary)->id)->count()>0) || 
+                    // (empty($staff_code)==false && str_contains($record_type,"academic") && BIMSRecord::where('staff_number_imported',$staff_code)->where('beneficiary_id',optional($beneficiary)->id)->count()>0) || 
+                    // (empty($matric_code)==false && str_contains($record_type,"student") && BIMSRecord::where('matric_number_imported',$matric_code)->where('beneficiary_id',optional($beneficiary)->id)->count()>0) || 
+                    // (empty($email)==false && BIMSRecord::where('email_verified',$email)->where('beneficiary_id',optional($beneficiary)->id)->count()>0) || 
+                    // (empty($valid_telephone)==false && BIMSRecord::where('phone_verified',$valid_telephone)->where('beneficiary_id',optional($beneficiary)->id)->count()>0) || 
+                    // (empty($staff_code)==false && str_contains($record_type,"academic") && BIMSRecord::where('staff_number_verified',$staff_code)->where('beneficiary_id',optional($beneficiary)->id)->count()>0) || 
+                    // (empty($matric_code)==false && str_contains($record_type,"student") && BIMSRecord::where('matric_number_verified',$matric_code)->where('beneficiary_id',optional($beneficiary)->id)->count()>0)
+                )
+                {
 
                     //duplicate record detected.
                     $duplicated_records_counter++;
