@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class RecordUploader extends Command
 {
-    protected $signature = 'bims:csv-uploader {beneficiary_id} {record_type} {record_csv_file_path}';
+    protected $signature = 'bims:csv-uploader {beneficiary_id} {record_type} {record_csv_file_path} {org_id}';
     protected $description = 'Uploads a BIMS record from a local CSV file for a beneficiary institution';
 
     public function __construct(){
@@ -36,6 +36,7 @@ class RecordUploader extends Command
 
     public function handle(){
     
+        $org_id = $this->argument('org_id');
         $record_type = $this->argument('record_type');
         $beneficiary_id = $this->argument('beneficiary_id');
         $record_csv_file_path = $this->argument('record_csv_file_path');
@@ -43,6 +44,15 @@ class RecordUploader extends Command
         $beneficiary = Beneficiary::find($beneficiary_id);
         if ($beneficiary == null){
             echo "Beneficiary not found.\n";
+            return 0;
+        }
+
+        if ($org_id != null && Organization::find($beneficiary->organization_id) != null){
+            $org_id = $beneficiary->organization_id;
+        }
+
+        if ($org_id == null){
+            echo "Organization not found.\n";
             return 0;
         }
 
@@ -116,7 +126,7 @@ class RecordUploader extends Command
                 //if the matric number exists, or if the phone exists, and if the email address exists
 
                 // code optimization using query builder
-                $query = BIMSRecord::where('beneficiary_id', optional($beneficiary_member)->beneficiary_id);
+                $query = BIMSRecord::where('beneficiary_id', $beneficiary_id);
 
                 if (!empty($email)) {
                     $query->where(function (Builder $query) use ($email) {
@@ -132,14 +142,14 @@ class RecordUploader extends Command
                     });
                 }
 
-                if (!empty($staff_code) && str_contains($request->user_type, "academic")) {
+                if (!empty($staff_code) && str_contains($record_type, "academic")) {
                     $query->where(function (Builder $query) use ($staff_code) {
                         $query->where('staff_number_imported', $staff_code)
                             ->orWhere('staff_number_verified', $staff_code);
                     });
                 }
 
-                if (!empty($matric_code) && str_contains($request->user_type, "student")) {
+                if (!empty($matric_code) && str_contains($record_type, "student")) {
                     $query->where(function (Builder $query) use ($matric_code) {
                         $query->where('matric_number_imported', $matric_code)
                             ->orWhere('matric_number_verified', $matric_code);
@@ -169,7 +179,7 @@ class RecordUploader extends Command
                     try{
 
                         $bims_record =  BIMSRecord::create([
-                            'organization_id'=>$beneficiary->organization_id,
+                            'organization_id'=>$org_id,
                             'beneficiary_id'=>$beneficiary->id,
                             'first_name_imported'=>$first_name,
                             'middle_name_imported'=>$middle_name,
