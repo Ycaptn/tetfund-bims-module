@@ -37,11 +37,15 @@
             </div>
             <div class="col-md-2 align-middle p-1 text-center">
                 <span class="text-success small fw-bold"> @if(empty($data_item->user_type)) UNKNOWN @else {{ strtoupper($data_item->user_type) }} @endif</span> <br/>
-                @if ($data_item->is_verified == true)
-                    <span class="text-success small" style="font-szie:70%">Confirmed</span>
-                @else
-                    <span class="text-warning small" style="font-szie:70%">Unverified</span>
-                @endif
+
+                {{--
+                    @if ($data_item->is_verified == true)
+                        <span class="text-success small" style="font-szie:70%">Confirmed</span>
+                        @else
+                        <span class="text-warning small" style="font-szie:70%">Unverified</span>
+                    @endif
+                --}}
+
             </div>   
             <div class="col-md-3 align-middle p-1">
                 @php
