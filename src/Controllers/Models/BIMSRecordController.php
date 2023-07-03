@@ -201,7 +201,7 @@ class BIMSRecordController extends BaseController
         //Process each line
         if (($handle = fopen($path_to_file, "r")) !== FALSE) {
             while (false !== ($data = fgetcsv($handle, 1024))) {
-                
+              
                 $first_name = trim($data[0]);
                 $middle_name = trim($data[1]);
                 $last_name = trim($data[2]);
@@ -210,6 +210,19 @@ class BIMSRecordController extends BaseController
                 
                 $staff_code = trim($data[5]);
                 $matric_code = trim($data[5]);
+
+                /**
+                 * Replace NBSP with a regular space
+                 */
+                $first_name = str_replace("\xC2\xA0", " ", $first_name);
+                $middle_name = str_replace("\xC2\xA0", " ", $middle_name);
+                $last_name = str_replace("\xC2\xA0", " ", $last_name);
+                $email = str_replace("\xC2\xA0", " ", $email);
+                $phone = str_replace("\xC2\xA0", " ", $phone);
+                
+                $staff_code =   str_replace("\xC2\xA0", " ", $staff_code);
+                $matric_code = str_replace("\xC2\xA0", " ", $matric_code);
+
 
                 $csv_headings = ["First Name", "Middle Name", 'Last Name', 'Email Address', 'Phone Number', 'Matric Code', 'Staff Code'];
 
@@ -314,13 +327,12 @@ class BIMSRecordController extends BaseController
                 } else {
 
                     try{
-
                         $bims_record =  BIMSRecord::create([
                             'organization_id'=>$current_user->organization_id,
                             'beneficiary_id'=>$beneficiary_member->beneficiary_id,
-                            'first_name_imported'=>$first_name,
-                            'middle_name_imported'=>$middle_name,
-                            'last_name_imported'=>$last_name,
+                            'first_name_imported'=> str_replace("\xC2\xA0", " ", $first_name),
+                            'middle_name_imported'=> str_replace("\xC2\xA0", " ", $middle_name),
+                            'last_name_imported'=>  str_replace("\xC2\xA0", " ", $last_name),
                             'phone_imported'=>$valid_telephone,
                             'email_imported'=>$email,
                             'staff_number_imported' => (str_contains($request->user_type,"academic") ? $staff_code : null),
