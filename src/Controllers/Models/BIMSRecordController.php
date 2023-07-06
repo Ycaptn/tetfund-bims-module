@@ -201,7 +201,22 @@ class BIMSRecordController extends BaseController
         //Process each line
         if (($handle = fopen($path_to_file, "r")) !== FALSE) {
             while (false !== ($data = fgetcsv($handle, 1024))) {
-              
+
+                /**
+                 * Remove character encoding
+                 * Remove invalid characters
+                 * Strip slashes 
+                 * Replace character encoding escape sequences with regular space
+                */
+                for ($i=0; $i < 6; $i++) { 
+                    if(array_key_exists($i, $data)){
+                        $data[$i] = utf8_decode($data[$i]); 
+                        $data[$i] = iconv('UTF-8', 'UTF-8//IGNORE', $data[$i]); 
+                        $data[$i] = stripcslashes($data[$i]); 
+                        $data[$i] = preg_replace('/\\\\x[a-fA-F0-9]{2}/', '', $data[$i]); 
+                    }
+                }
+
                 $first_name = trim($data[0]);
                 $middle_name = trim($data[1]);
                 $last_name = trim($data[2]);
@@ -210,19 +225,6 @@ class BIMSRecordController extends BaseController
                 
                 $staff_code = trim($data[5]);
                 $matric_code = trim($data[5]);
-
-                /**
-                 * Replace NBSP with a regular space
-                 */
-                $first_name = str_replace("\xC2\xA0", " ", $first_name);
-                $middle_name = str_replace("\xC2\xA0", " ", $middle_name);
-                $last_name = str_replace("\xC2\xA0", " ", $last_name);
-                $email = str_replace("\xC2\xA0", " ", $email);
-                $phone = str_replace("\xC2\xA0", " ", $phone);
-                
-                $staff_code =   str_replace("\xC2\xA0", " ", $staff_code);
-                $matric_code = str_replace("\xC2\xA0", " ", $matric_code);
-
 
                 $csv_headings = ["First Name", "Middle Name", 'Last Name', 'Email Address', 'Phone Number', 'Matric Code', 'Staff Code'];
 
