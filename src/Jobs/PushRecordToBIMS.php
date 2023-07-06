@@ -51,7 +51,7 @@ class PushRecordToBIMS implements ShouldQueue
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => array(
             'client_id' => env('BIMS_CLIENT_ID', 'your client id'),
-            'unique_id' => $this->bIMSRecord->beneficiary->id,
+            'unique_id' => $this->bIMSRecord->id,
             'first_name' => $this->bIMSRecord->first_name_verified,
             'last_name' => $this->bIMSRecord->last_name_verified,
             'email' => $this->bIMSRecord->email_verified,
