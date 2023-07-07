@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 use TETFund\BIMSOnboarding\Models\BIMSRecord;
 
@@ -41,7 +42,7 @@ class PushRecordToBIMS implements ShouldQueue
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-        CURLOPT_URL => env('BIMS_REGISTERATION_URI', 'https://bims.tetfund.gov.ng/api/auth/register'),
+        CURLOPT_URL => env('BIMS_API_BASE_URL', 'https://bims.tetfund.gov.ng/api'). '/auth/register',
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
@@ -51,6 +52,7 @@ class PushRecordToBIMS implements ShouldQueue
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => array(
             'client_id' => env('BIMS_CLIENT_ID', 'your client id'),
+            'institution_id' => $this->bIMSRecord->beneficiary->bims_tetfund_id,
             'unique_id' => $this->bIMSRecord->id,
             'first_name' => $this->bIMSRecord->first_name_verified,
             'last_name' => $this->bIMSRecord->last_name_verified,
@@ -76,9 +78,13 @@ class PushRecordToBIMS implements ShouldQueue
         $errors = $response['errors'] ?? [];
         $data = $response['data'] ?? [];
         
-        // if ($status== true || $status == 1)
+        if ($status== true || $status == 1)
+        {
             $this->attemptBIMRecordActivation(null, $message);
-        // We have sent you a special link to verify your email.
+        }
+        else {
+            \Log::error($response);
+        }
     }
 
     /**
@@ -94,31 +100,7 @@ class PushRecordToBIMS implements ShouldQueue
             $this->bIMSRecord->user_status = 'bims-active';
             $this->bIMSRecord->save();
         };
-        $activateBIMSRecord();
-
-        // if(is_null($err))
-        // activateBIMSRecord();
-        // else 
-        //     checkErr($err);
-        // if(is_array($err)){
-        //     $err = flatten_array($err);
-        //     $err = implode(',',$err);
-        //     checkErr($err);
-        // }
-
-        // // check the error message content 
-        // $checkErr = function ($err) {
-        //     if(!str_contains($err, 'is taken')
-        //         ||!str_contains($err, 'must be unique')
-        //         ||!str_contains($err, 'must be') 
-        //     )  
-        //       activateBIMSRecord();
-        //     else {
-        //         // notify the user of the error message 
-        //         echo $msg;
-        //     }
-        // };
-           
+        $activateBIMSRecord();           
     }
 
     /**
