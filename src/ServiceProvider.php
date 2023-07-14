@@ -53,6 +53,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         // Register the available commands if we are using the application via the CLI
         if ($this->app->runningInConsole()) {
             $this->commands([
+                \TETFund\BIMSOnboarding\Console\RecordSeeder::class,
                 \TETFund\BIMSOnboarding\Console\RecordUploader::class,
             ]);
         }
