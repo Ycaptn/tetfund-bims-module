@@ -40,7 +40,7 @@ class PushRecordToBIMS implements ShouldQueue
         return;
 
         $curl = curl_init();
-
+        $genders = ['M', 'F'];
         curl_setopt_array($curl, array(
         CURLOPT_URL => env('BIMS_API_BASE_URL', 'https://bims.tetfund.gov.ng/api'). '/auth/register',
         CURLOPT_RETURNTRANSFER => true,
@@ -58,7 +58,7 @@ class PushRecordToBIMS implements ShouldQueue
             'last_name' => $this->bIMSRecord->last_name_imported,
             'email' => $this->bIMSRecord->email_imported,
             'phone' => $this->bIMSRecord->phone_imported,
-            'gender' => $this->bIMSRecord->gender_imported,
+            'gender' => $genders[array_rand($genders)], //$this->bIMSRecord->gender_imported,
             'type' => $this->bIMSRecord->user_type == 'student' ? "STUDENT" : "LECTURER",
         ),
         CURLOPT_HTTPHEADER => array(
