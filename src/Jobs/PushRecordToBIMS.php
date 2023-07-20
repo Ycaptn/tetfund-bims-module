@@ -80,10 +80,21 @@ class PushRecordToBIMS implements ShouldQueue
         
         if ($status== true || $status == 1)
         {
-            $this->attemptBIMRecordActivation(null, $message);
+            $this->activateBIMRecord();
         }
         else {
-            \Log::error($response);
+            if(
+                isset($response['errors']['emails'])
+                || isset($response['errors']['phone'])
+            )
+            {
+                $response['report'] = $this->bIMSRecord->beneficiary->short_name." record with the email address ".$this->bIMSRecord->email_verified." pushed to bims failed";
+                \Log::error($response);
+            }
+            else {
+                $this->activateBIMRecord();
+            }
+           
         }
     }
 
@@ -93,32 +104,8 @@ class PushRecordToBIMS implements ShouldQueue
      * @param string|array|null $err
      * @param string $msg
      */
-    public function attemptBIMRecordActivation($err = null, String $msg=null){
-
-    
-        $activateBIMSRecord = function (){
-            $this->bIMSRecord->user_status = 'bims-active';
-            $this->bIMSRecord->save();
-        };
-        $activateBIMSRecord();           
-    }
-
-    /**
-     * Flattens a multidimensional array into a single-dimensional array.
-     *
-     * @param array $array The multidimensional array to be flattened.
-     * @return array The flattened array containing all the values from the original array.
-     */
-    function flatten_array($array) {
-        $result = [];
-        foreach ($array as $value) {
-            if (is_array($value)) {
-                $result = [...$result, ...flatten_array($value)];
-            } else {
-                $result[] = $value;
-            }
-        }
-        return $result;
-    }
-    
+    public function activateBIMRecord(){
+        $this->bIMSRecord->user_status = 'bims-active';
+        $this->bIMSRecord->save();        
+    }    
 }

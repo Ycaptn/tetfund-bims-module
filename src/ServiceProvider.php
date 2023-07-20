@@ -55,6 +55,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             $this->commands([
                 \TETFund\BIMSOnboarding\Console\RecordSeeder::class,
                 \TETFund\BIMSOnboarding\Console\RecordUploader::class,
+                \TETFund\BIMSOnboarding\Console\Command\BIMSRecordPusher::class,
             ]);
         }
     }
