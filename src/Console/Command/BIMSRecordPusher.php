@@ -66,7 +66,7 @@ class BIMSRecordPusher extends Command
                 
                 $this->info("Pushed {$bim_record->email_imported} to BIMS");
 
-                if($counter==50){
+                if($counter==2){
                     $this->line('');
                     $this->info("Pushed {$counter} {$beneficiary->short_name} records to BIMS");
                     break;
