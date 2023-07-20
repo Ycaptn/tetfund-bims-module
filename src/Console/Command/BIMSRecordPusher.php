@@ -40,48 +40,43 @@ class BIMSRecordPusher extends Command
      */
     public function handle()
     {
-         $unpushed_bims_records  = BIMSRecord::where('user_status', '<>', 'bims-active')
-                        ->where('is_verified', true)->get()->count();
-
-        if($unpushed_bims_records <=0){
-            $this->info("No unpushed verified record");
+        if(BIMSRecord::where('user_status', '<>', 'bims-active')->get()->count() <=0){
+            $this->info("No unpushed record");
             return 1;
         }
 
         $beneficiaries = Beneficiary::all();
 
-        $this->line("Pushing records of {$beneficiaries->count()} beneficiaries  to bims");
+        $this->line("Pushing records by {$beneficiaries->count()} beneficiaries  to bims");
 
         foreach($beneficiaries as $beneficiary)
-        {
+        {            
+            
             $bims_records = $beneficiary->bimsRecords()
-            ->where('user_status', '<>', 'bims-active')
-            ->where('is_verified', true)->get();
-
-           
-            if($bims_records->count() <=0);
+            ->where('user_status', '<>', 'bims-active')->get();
+            if($bims_records->count()==0)
             continue;
 
             $this->line("Pushing {$beneficiary->short_name} {$bims_records->count()} records to BIMS");
             $counter = 1;
             foreach ($bims_records as $bim_record) {
                 
-                $this->warn("Pushing {$bim_record->email_verified}, {$counter} of {$bims_records->count()} record to BIMS");
+                $this->warn("Pushing {$bim_record->email_imported}, {$counter} of {$bims_records->count()} {$beneficiary->short_name} record to BIMS");
                 PushRecordToBIMS::dispatchNow($bim_record);
-                $this->info("Pushed {$bim_record->email_verified} to BIMS");
+                
+                $this->info("Pushed {$bim_record->email_imported} to BIMS");
 
-                if($counter==100)
-                break;
+                if($counter==50){
+                    $this->line('');
+                    $this->info("Pushed {$counter} {$beneficiary->short_name} records to BIMS");
+                    break;
+
+                }
                 $counter++;
             }
 
-            $this->ifno("Pushed {$beneficiary->short_name}{$bims_records->count()} records to BIMS");
-
-            $counter=1;
-
         }
-            
-        $this->info("Pushed {$beneficiaries->count()} beneficiaries records to bims");
+
         return 1;
     }
 }

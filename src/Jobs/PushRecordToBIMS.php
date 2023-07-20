@@ -36,7 +36,7 @@ class PushRecordToBIMS implements ShouldQueue
      */
     public function handle()
     {
-        if(is_null($this->bIMSRecord) || !$this->bIMSRecord->is_verified)
+        if(is_null($this->bIMSRecord) || $this->bIMSRecord->user_status == 'bims-active')
         return;
 
         $curl = curl_init();
@@ -54,11 +54,11 @@ class PushRecordToBIMS implements ShouldQueue
             'client_id' => env('BIMS_CLIENT_ID', 'your client id'),
             'institution_id' => $this->bIMSRecord->beneficiary->bims_tetfund_id,
             'unique_id' => $this->bIMSRecord->id,
-            'first_name' => $this->bIMSRecord->first_name_verified,
-            'last_name' => $this->bIMSRecord->last_name_verified,
-            'email' => $this->bIMSRecord->email_verified,
-            'phone' => $this->bIMSRecord->phone_verified,
-            'gender' => $this->bIMSRecord->gender_verified,
+            'first_name' => $this->bIMSRecord->first_name_imported,
+            'last_name' => $this->bIMSRecord->last_name_imported,
+            'email' => $this->bIMSRecord->email_imported,
+            'phone' => $this->bIMSRecord->phone_imported,
+            'gender' => $this->bIMSRecord->gender_imported,
             'type' => $this->bIMSRecord->user_type == 'student' ? "STUDENT" : "LECTURER",
         ),
         CURLOPT_HTTPHEADER => array(
@@ -68,7 +68,12 @@ class PushRecordToBIMS implements ShouldQueue
 
 
         $response = curl_exec($curl);
+        $error = curl_error($curl);
         curl_close($curl);
+
+        if($error){
+            \Log::error($error);
+        }
 
         $response = json_decode($response, true);
 
@@ -78,21 +83,25 @@ class PushRecordToBIMS implements ShouldQueue
         $errors = $response['errors'] ?? [];
         $data = $response['data'] ?? [];
         
+
         if ($status== true || $status == 1)
         {
             $this->activateBIMRecord();
         }
         else {
+            
             if(
-                isset($response['errors']['emails'])
+                isset($response['errors']['email'])
                 || isset($response['errors']['phone'])
             )
             {
-                $response['report'] = $this->bIMSRecord->beneficiary->short_name." record with the email address ".$this->bIMSRecord->email_verified." pushed to bims failed";
-                \Log::error($response);
+
+                $this->activateBIMRecord();
+
             }
             else {
-                $this->activateBIMRecord();
+                $response['report'] = $this->bIMSRecord->beneficiary->short_name." record with the email address ".$this->bIMSRecord->email_imported." pushed to bims failed";
+                \Log::error($response);
             }
            
         }
