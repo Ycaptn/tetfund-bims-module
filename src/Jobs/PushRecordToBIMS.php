@@ -90,19 +90,19 @@ class PushRecordToBIMS implements ShouldQueue
         }
         else {
             
-            if(
-                isset($response['errors']['email'])
-                || isset($response['errors']['phone'])
-            )
-            {
+            // if(
+            //     isset($response['errors']['email'])
+            //     || isset($response['errors']['phone'])
+            // )
+            // {
 
-                $this->activateBIMRecord();
+            //     $this->activateBIMRecord();
 
-            }
-            else {
+            // }
+            // else {
                 $response['report'] = $this->bIMSRecord->beneficiary->short_name." record with the email address ".$this->bIMSRecord->email_imported." pushed to bims failed";
                 \Log::error($response);
-            }
+            // }
            
         }
     }
