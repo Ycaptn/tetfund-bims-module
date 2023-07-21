@@ -53,7 +53,7 @@ class BIMSRecordPusher extends Command
         foreach($beneficiaries as $beneficiary)
         {            
             $bims_records = $beneficiary->bimsRecords()
-            ->where('user_status', '<>', 'bims-active')->get();
+            ->where('user_status', '<>', 'bims-active')->inRandomOrder()->take(5)->get();
             if($bims_records->count()==0){
                 $this->warn("No unpushed records for {$beneficiary->short_name}");
                 continue;
@@ -74,6 +74,7 @@ class BIMSRecordPusher extends Command
                     $this->error("Failed: {$bim_record->email_imported} index {$counter} of {$bims_records->count()} {$beneficiary->short_name} with bims-id {$beneficiary->bims_tetfund_id} record");
                     $counter++;
                     usleep(1000000); //  1 seconds delay 
+
                 }
             }
 
