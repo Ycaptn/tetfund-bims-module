@@ -460,7 +460,7 @@ class BIMSRecordController extends BaseController
         PushRecordToBIMS::dispatch($bIMSRecord);
 
         return redirect(route('bims-onboarding.BIMSRecords.verified', $bIMSRecord->id))->with('success', 'B I M S Record verified successfully');
-    }*
+    }
 
     /* confim the specified resource data.
     *
