@@ -276,10 +276,10 @@ class BIMSRecordController extends BaseController
                 // code optimization using query builder
                 $query = BIMSRecord::where('beneficiary_id', optional($beneficiary_member)->beneficiary_id);
 
-                if (!empty($email)) {
-                    $query->where(function (Builder $query) use ($email) {
-                        $query->where('email_imported', $email)
-                            ->orWhere('email_verified', $email);
+                if (!empty($valid_email)) {
+                    $query->where(function (Builder $query) use ($valid_email) {
+                        $query->where('email_imported', $valid_email)
+                            ->orWhere('email_verified', $valid_email);
                     });
                 }
  
@@ -336,7 +336,7 @@ class BIMSRecordController extends BaseController
                             'middle_name_imported'=> str_replace("\xC2\xA0", " ", $middle_name),
                             'last_name_imported'=>  str_replace("\xC2\xA0", " ", $last_name),
                             'phone_imported'=>$valid_telephone,
-                            'email_imported'=>$email,
+                            'email_imported'=>$valid_email,
                             'staff_number_imported' => (str_contains($request->user_type,"academic") ? $staff_code : null),
                             'matric_number_imported' => (str_contains($request->user_type,"student") ? $matric_code : null),
                             'user_status' => 'new-import',

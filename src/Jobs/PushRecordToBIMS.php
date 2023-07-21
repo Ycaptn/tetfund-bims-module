@@ -102,6 +102,7 @@ class PushRecordToBIMS implements ShouldQueue
             // else {
                 $response['report'] = $this->bIMSRecord->beneficiary->short_name." record with the email address ".$this->bIMSRecord->email_imported." pushed to bims failed";
                 \Log::error($response);
+                session(['push record to bims error' => $response]);
             // }
            
         }
