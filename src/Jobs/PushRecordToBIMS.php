@@ -89,22 +89,18 @@ class PushRecordToBIMS implements ShouldQueue
             $this->activateBIMRecord();
         }
         else {
+            $email_taken = "The email has already been taken.";
+            $phone_taken = "The phone has already been taken.";
+            $errors = implode($this->arrayFlatten($errors));
+
+            if(strstr($errors, $email_taken) || strstr($errors, $phone_taken)){
+                $this->activateBIMRecord();
+                return 1;
+            }
             
-            // if(
-            //     isset($response['errors']['email'])
-            //     || isset($response['errors']['phone'])
-            // )
-            // {
-
-            //     $this->activateBIMRecord();
-
-            // }
-            // else {
-                $response['report'] = $this->bIMSRecord->beneficiary->short_name." record with the email address ".$this->bIMSRecord->email_imported." pushed to bims failed";
-                \Log::error($response);
-                session(['push record to bims error' => $response]);
-            // }
-           
+            $response['report'] = $this->bIMSRecord->beneficiary->short_name." record with the email address ".$this->bIMSRecord->email_imported." pushed to bims failed";
+            \Log::error($response);
+            session(['push record to bims error' => $response]);
         }
     }
 
@@ -114,8 +110,22 @@ class PushRecordToBIMS implements ShouldQueue
      * @param string|array|null $err
      * @param string $msg
      */
-    public function activateBIMRecord(){
+    protected function activateBIMRecord(){
         $this->bIMSRecord->user_status = 'bims-active';
         $this->bIMSRecord->save();        
-    }    
+    } 
+    /**
+     * Flatten an array
+     */
+    protected function arrayFlatten($array) {
+        $flattened = array();
+        foreach ($array as $element) {
+            if (is_array($element)) {
+                $flattened = array_merge($flattened, $this->arrayFlatten($element));
+            } else {
+                $flattened[] = $element;
+            }
+        }
+        return $flattened;
+    }
 }
