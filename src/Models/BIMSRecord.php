@@ -72,7 +72,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class BIMSRecord extends Model
 {
     use GuidId;
-    use OrganizationalConstraint;
+    // use OrganizationalConstraint;
     
     use SoftDeletes;
 

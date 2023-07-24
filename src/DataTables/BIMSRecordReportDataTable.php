@@ -37,6 +37,9 @@ class BIMSRecordReportDataTable extends DataTable
             ->addColumn('Institution', function($bim_record){
                 return "{$bim_record->beneficiary->full_name} - {$bim_record->beneficiary->short_name}";
 
+            })->addColumn('Zone', function($bim_record){
+                return ucwords("{$bim_record->beneficiary->geo_zone}");
+
             })->addColumn('Verified', function($bim_record){
 
                 $verified_records = $bim_record["Verified"];
@@ -66,7 +69,7 @@ class BIMSRecordReportDataTable extends DataTable
                 $column_value = number_format($bim_record["Total Records"],0);
                 return "<center>{$column_value}</center>";
 
-            })->rawColumns(['Verified','Academic Staff','Non Academic','Student','Other','Total Records']);
+            })->rawColumns(['Verified','Zone','Academic Staff','Non Academic','Student','Other','Total Records']);
     }
 
     /**
@@ -77,7 +80,17 @@ class BIMSRecordReportDataTable extends DataTable
      */
     public function query(BIMSRecord $model)
     {
-        return $model::select('id','beneficiary_id',
+        $zone = null;
+        if (request()->has("z")){
+            if (request()->z == "nw"){ $zone = "north west"; }
+            if (request()->z == "ne"){ $zone = "north east"; }
+            if (request()->z == "nc"){ $zone = "north central"; }
+            if (request()->z == "sw"){ $zone = "south west"; }
+            if (request()->z == "ss"){ $zone = "south south"; }
+            if (request()->z == "se"){ $zone = "south east"; }
+        }
+
+        $query = $model::select('tf_bims_record.id','tf_bims_record.beneficiary_id',
             \DB::raw('SUM(CASE WHEN `user_type` = \'academic\' THEN 1 ELSE 0 END) AS "Academic Staff"'),
             \DB::raw('SUM(CASE WHEN `user_type` = \'non-academic\' THEN 1 ELSE 0 END) AS "Non Academic"'),
             \DB::raw('SUM(CASE WHEN `user_type` = \'student\' THEN 1 ELSE 0 END) AS "Student"'),
@@ -85,8 +98,15 @@ class BIMSRecordReportDataTable extends DataTable
             \DB::raw('SUM(CASE WHEN `is_verified` = \'0\' THEN 1 ELSE 0 END) AS "Unverified"'),
             \DB::raw('SUM(CASE WHEN `is_verified` = \'1\' THEN 1 ELSE 0 END) AS "Verified"'),
             \DB::raw('SUM(CASE WHEN `is_verified` = \'1\' THEN 1 ELSE 0 END) AS "is_verified"'),
-            \DB::raw('Count(id) AS "Total Records"')
-        )->groupBy('beneficiary_id');
+            \DB::raw('Count(tf_bims_record.id) AS "Total Records"')
+        );
+        if ($zone!=null){
+            $query->join('tf_bi_portal_beneficiaries', 'tf_bi_portal_beneficiaries.id', '=', 'tf_bims_record.beneficiary_id');
+            $query->where('tf_bi_portal_beneficiaries.geo_zone', $zone);
+        }
+        $query->groupBy('tf_bims_record.beneficiary_id');
+
+        return $query;
     }
 
     /**
@@ -121,6 +141,7 @@ class BIMSRecordReportDataTable extends DataTable
         return [
             Column::make('DT_RowIndex')->title('S/N')->searchable(false),
             Column::make('Institution')->style('width:250px;'),
+            Column::make('Zone')->searchable(false),
             Column::make('Academic Staff')->searchable(false)->style('text-align:center;'),
             Column::make('Non Academic')->searchable(false)->style('text-align:center;'),
             Column::make('Student')->searchable(false)->style('text-align:center;'),

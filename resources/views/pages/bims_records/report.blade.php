@@ -25,6 +25,18 @@ All Beneficiaries
 </a> 
 @stop
 
+@section('page_title_buttons')
+<select id="sel-zone-selector" name="sel-zone-selector" class="form-select">
+    <option value="">All Geopolitical Zones</option>
+    <option value="nw">North West</option>
+    <option value="ne">North East</option>
+    <option value="nc">North Central</option>
+    <option value="sw">South West</option>
+    <option value="se">South East</option>
+    <option value="ss">South South</option>
+</select>
+@stop
+
 @section('app_css')
     @include('layouts.datatables_css')
 @endsection
@@ -150,4 +162,13 @@ All Beneficiaries
 @push('page_scripts')
     @include('layouts.datatables_js')
     {!! $dataTable->scripts() !!}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("select[name='sel-zone-selector']").change(function(){
+                location.href = '{{ route("bims-onboarding.BIMSRecords.report") }}?z='+this.value;
+            });
+        });
+    </script>
+
 @endpush
