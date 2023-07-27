@@ -66,7 +66,7 @@ class BIMSRecordPusher extends Command
                 PushRecordToBIMS::dispatchNow($bim_record);
 
                 if(is_null(session('push record to bims error'))){
-                    $this->info("Pushed {$bim_record->email_imported} of {$beneficiary->short_name} records to BIMS");
+                    $this->info("Pushed {$bim_record->email_imported} of {$beneficiary->short_name} records to BIMS inst-{$beneficiary->bims_tetfund_id}");
                     $microseconds = $delay_min * 60 * 1000000;
                     usleep($microseconds); // minutes delay ca
                     break;
