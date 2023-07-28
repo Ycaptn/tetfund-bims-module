@@ -36,8 +36,8 @@ class PushRecordToBIMS implements ShouldQueue
      */
     public function handle()
     {
-        if(is_null($this->bIMSRecord) || $this->bIMSRecord->user_status == 'bims-active')
-        return;
+        if(is_null($this->bIMSRecord) || $this->bIMSRecord->user_status == 'bims-active' || is_null($this->bIMSRecord->beneficiary->bims_tetfund_id))
+        return false;
 
         $curl = curl_init();
         $genders = ['M', 'F'];
