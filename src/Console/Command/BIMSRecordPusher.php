@@ -14,7 +14,7 @@ class BIMSRecordPusher extends Command
      *
      * @var string
      */
-    protected $signature = 'bims:push-record-to-bims {delay_min=0.2}';
+    protected $signature = 'bims:push-record-to-bims {delay_min=0.2} {no_bims_record_per_bnf=5}';
 
     /**
      * The console command description.
@@ -41,6 +41,7 @@ class BIMSRecordPusher extends Command
     public function handle()
     {
         $delay_min =  $this->argument('delay_min');
+        $no_bims_record_per_bnf =  $this->argument('no_bims_record_per_bnf');
         if(BIMSRecord::where('user_status', '<>', 'bims-active')->get()->count() <=0){
             $this->info("No unpushed record");
             return 1;
@@ -48,13 +49,14 @@ class BIMSRecordPusher extends Command
 
         $beneficiaries_bims_sync = Beneficiary::where('bims_tetfund_id', '<>', null)->get();
         $beneficiaries_bims_unsync = Beneficiary::select(
-            'id', 
+            'id',
             'short_name', 
             'full_name', 
             'official_email', 
             'official_website',
-            'type as bi-type', 
+            'type', 
             'geo_zone',
+            'bims_tetfund_id as bims_institution_id'
         )->where('bims_tetfund_id', null)->orderBy('short_name')->get();
         
         $file_path = public_path()."/beneficiaries_bims_unsync.csv";
@@ -65,10 +67,10 @@ class BIMSRecordPusher extends Command
          */
         if($beneficiaries_bims_unsync->count() >= 0 )
         {
-            file_put_contents($file_path, "sn, id, short_name, full_name, official_website, type, goe_zone".PHP_EOL);
+            file_put_contents($file_path, "Sn; id; short_name; full_name; official_email; official_website; type; goe_zone; bims_institution_id".PHP_EOL);
             foreach($beneficiaries_bims_unsync as $key => $bnf_bim_unsyc){
                 $sn = $key+1;
-                file_put_contents($file_path, $sn.",".implode(',',$bnf_bim_unsyc->toArray()).PHP_EOL, FILE_APPEND );
+                file_put_contents($file_path, $sn.";".implode(';',$bnf_bim_unsyc->toArray()).PHP_EOL, FILE_APPEND );
             }
             $this->warn("{$beneficiaries_bims_unsync->count()} beneficiaries  (bims unsyncf) ");
 
@@ -78,13 +80,12 @@ class BIMSRecordPusher extends Command
                 unlink($file_path);
             } 
         }
-       
         $this->line("Pushing records of {$beneficiaries_bims_sync->count()} sync beneficiaries to bims");
         $this->line('');
         foreach($beneficiaries_bims_sync as $beneficiary)
         {            
             $bims_records = $beneficiary->bimsRecords()
-            ->where('user_status', '<>', 'bims-active')->inRandomOrder()->take(5)->get();
+            ->where('user_status', '<>', 'bims-active')->inRandomOrder()->take($no_bims_record_per_bnf)->get();
             if($bims_records->count()==0){
                 $this->warn("No unpushed records for {$beneficiary->short_name}");
                 continue;
