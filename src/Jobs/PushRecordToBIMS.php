@@ -72,7 +72,7 @@ class PushRecordToBIMS implements ShouldQueue
         curl_close($curl);
 
         if($error){
-            \Log::error($error);
+            // \Log::error($error);
         }
 
         $response = json_decode($response, true);
@@ -99,7 +99,7 @@ class PushRecordToBIMS implements ShouldQueue
             }
             
             $response['report'] = $this->bIMSRecord->beneficiary->short_name." record with the email address ".$this->bIMSRecord->email_imported." pushed to bims failed";
-            \Log::error($response);
+            // \Log::error($response);
             session(['push record to bims error' => $response]);
         }
     }
