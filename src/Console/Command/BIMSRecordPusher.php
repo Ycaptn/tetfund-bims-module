@@ -80,30 +80,30 @@ class BIMSRecordPusher extends Command
                 unlink($file_path);
             } 
         }
-        $this->line("Pushing records of {$beneficiaries_bims_sync->count()} sync beneficiaries to bims");
-        $this->line('');
+        // $this->line("Pushing records of {$beneficiaries_bims_sync->count()} sync beneficiaries to bims");
+        // $this->line('');
         foreach($beneficiaries_bims_sync as $beneficiary)
         {            
             $bims_records = $beneficiary->bimsRecords()
             ->where('user_status', '<>', 'bims-active')->inRandomOrder()->take($no_bims_record_per_bnf)->get();
             if($bims_records->count()==0){
-                $this->warn("No unpushed records for {$beneficiary->short_name}");
+                // $this->warn("No unpushed records for {$beneficiary->short_name}");
                 continue;
             }
 
             if($bims_records->count()==0){
-                $this->warn("No unpushed records for {$beneficiary->short_name}");
+                // $this->warn("No unpushed records for {$beneficiary->short_name}");
                 continue;
             }
 
             $counter = 1;
             $this->line("Pushing {$beneficiary->short_name} {$bims_records->count()} records to BIMS");
             foreach ($bims_records as $key => $bim_record) {
-                $this->warn("Pushing {$bim_record->email_imported}  {$counter} of {$bims_records->count()} {$beneficiary->short_name} record to BIMS");
+                // $this->warn("Pushing {$bim_record->email_imported}  {$counter} of {$bims_records->count()} {$beneficiary->short_name} record to BIMS");
                 PushRecordToBIMS::dispatchNow($bim_record);
 
                 if(is_null(session('push record to bims error'))){
-                    $this->info("Pushed {$bim_record->email_imported} of {$beneficiary->short_name} records to BIMS inst-{$beneficiary->bims_tetfund_id}");
+                    // $this->info("Pushed {$bim_record->email_imported} of {$beneficiary->short_name} records to BIMS inst-{$beneficiary->bims_tetfund_id}");
                     $microseconds = $delay_min * 60 * 1000000;
                     usleep($microseconds); // delay push to avert too many request on bims
                     
@@ -111,7 +111,7 @@ class BIMSRecordPusher extends Command
                         break;
                     }
                 }else{
-                    $this->error("Failed: {$bim_record->email_imported} index {$counter} of {$bims_records->count()} {$beneficiary->short_name} with bims-id {$beneficiary->bims_tetfund_id} record");
+                    // $this->error("Failed: {$bim_record->email_imported} index {$counter} of {$bims_records->count()} {$beneficiary->short_name} with bims-id {$beneficiary->bims_tetfund_id} record");
                     usleep(1000000); //  1 seconds delay 
                 }
                 $counter++;
