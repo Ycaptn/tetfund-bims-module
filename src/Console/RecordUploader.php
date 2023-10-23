@@ -16,9 +16,6 @@ use Illuminate\Support\Facades\Config;
 
 use Illuminate\Console\Command;
 
-use App\Models\Beneficiary;
-use App\Models\BeneficiaryMember;
-
 use TETFund\BIMSOnboarding\Models\BIMSRecord;
 use Hasob\FoundationCore\Models\Organization;
 
@@ -41,7 +38,13 @@ class RecordUploader extends Command
         $beneficiary_id = $this->argument('beneficiary_id');
         $record_csv_file_path = $this->argument('record_csv_file_path');
 
-        $beneficiary = Beneficiary::find($beneficiary_id);
+        if (class_exists('App\Models\Beneficiary')) {
+            $beneficiaryOBJ = app('App\Models\Beneficiary');
+        } elseif (class_exists('TETFund\AJLS\Models\Beneficiary')) {
+            $beneficiaryOBJ = app('TETFund\AJLS\Models\Beneficiary');
+        }
+
+        $beneficiary = $beneficiaryOBJ->find($beneficiary_id);
         if ($beneficiary == null){
             echo "Beneficiary not found.\n";
             return 0;

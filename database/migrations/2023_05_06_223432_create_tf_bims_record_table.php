@@ -17,7 +17,15 @@ class CreateTfBimsRecordTable extends Migration
         Schema::create('tf_bims_record', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('organization_id')->references('id')->on('fc_organizations');
-            $table->foreignUuid('beneficiary_id')->references('id')->on('tf_bi_portal_beneficiaries');
+
+            if(Schema::hasTable('tf_bi_portal_beneficiaries')) {
+                $table->foreignUuid('beneficiary_id')->references('id')->on('tf_bi_portal_beneficiaries');
+            } elseif (Schema::hasTable('tf_ajls_beneficiaries')) {
+                $table->foreignUuid('beneficiary_id')->references('id')->on('tf_ajls_beneficiaries');
+            } else {
+                $table->foreignUuid('beneficiary_id')->nullable();
+            }
+
             $table->string('first_name_verified')->nullable();
             $table->string('middle_name_verified')->nullable();
             $table->string('last_name_verified')->nullable();

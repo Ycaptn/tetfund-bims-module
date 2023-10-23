@@ -16,9 +16,6 @@ use Illuminate\Support\Facades\Config;
 
 use Illuminate\Console\Command;
 
-use App\Models\Beneficiary;
-use App\Models\BeneficiaryMember;
-
 use TETFund\BIMSOnboarding\Models\BIMSRecord;
 use Hasob\FoundationCore\Models\Organization;
 
@@ -40,7 +37,13 @@ class RecordSeeder extends Command
         $max_per_bi = $this->argument('max_per_bi');
         $record_type = $this->argument('record_type');
 
-        $all_beneficiaries = Beneficiary::all();
+        if (class_exists('App\Models\Beneficiary')) {
+            $beneficiaryOBJ = app('App\Models\Beneficiary');
+        } elseif (class_exists('TETFund\AJLS\Models\Beneficiary')) {
+            $beneficiaryOBJ = app('TETFund\AJLS\Models\Beneficiary');
+        }
+
+        $all_beneficiaries = $beneficiaryOBJ->all();
 
 
         foreach($all_beneficiaries as $beneficiary){

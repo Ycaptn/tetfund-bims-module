@@ -2,9 +2,6 @@
 
 namespace TETFund\BIMSOnboarding\Controllers\Models;
 
-use App\Models\Beneficiary;
-use App\Models\BeneficiaryMember;
-
 use TETFund\BIMSOnboarding\Models\BIMSRecord;
 
 use TETFund\BIMSOnboarding\Events\BIMSRecordCreated;
@@ -45,7 +42,14 @@ class BIMSRecordController extends BaseController
     public function index(Organization $org, BIMSRecordDataTable $bIMSRecordDataTable)
     {
         $current_user = Auth()->user();
-        $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
+
+        if (class_exists('App\Models\BeneficiaryMember')) {
+            $beneficiaryMemberOBJ = app('App\Models\BeneficiaryMember');
+        } elseif (class_exists('TETFund\AJLS\Models\BeneficiaryMember')) {
+            $beneficiaryMemberOBJ = app('TETFund\AJLS\Models\BeneficiaryMember');
+        }
+
+        $beneficiary_member = $beneficiaryMemberOBJ->where('beneficiary_user_id', $current_user->id)->first();
 
         $cdv_bims_records = new \Hasob\FoundationCore\View\Components\CardDataView(BIMSRecord::class, "tetfund-bims-module::pages.bims_records.card_view_item");
         $cdv_bims_records->setDataQuery(['organization_id'=>$org->id,'beneficiary_id'=>optional($beneficiary_member)->beneficiary_id])
@@ -79,7 +83,14 @@ class BIMSRecordController extends BaseController
     public function displayBIMSRecordOnboarding(Organization $org)
     {
         $current_user = Auth()->user();
-        $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
+        
+        if (class_exists('App\Models\BeneficiaryMember')) {
+            $beneficiaryMemberOBJ = app('App\Models\BeneficiaryMember');
+        } elseif (class_exists('TETFund\AJLS\Models\BeneficiaryMember')) {
+            $beneficiaryMemberOBJ = app('TETFund\AJLS\Models\BeneficiaryMember');
+        }
+
+        $beneficiary_member = $beneficiaryMemberOBJ->where('beneficiary_user_id', $current_user->id)->first();
 
         return view('tetfund-bims-module::pages.bims_records.onboard')
                     ->with('current_user', $current_user)
@@ -185,7 +196,14 @@ class BIMSRecordController extends BaseController
     public function processBulkUpload(Organization $org, Request $request){
 
         $current_user = Auth()->user();
-        $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
+
+        if (class_exists('App\Models\BeneficiaryMember')) {
+            $beneficiaryMemberOBJ = app('App\Models\BeneficiaryMember');
+        } elseif (class_exists('TETFund\AJLS\Models\BeneficiaryMember')) {
+            $beneficiaryMemberOBJ = app('TETFund\AJLS\Models\BeneficiaryMember');
+        }
+
+        $beneficiary_member = $beneficiaryMemberOBJ->where('beneficiary_user_id', $current_user->id)->first();
 
         $attachedFileName = $beneficiary_member->beneficiary_id . '.' . time() . '.' . $request->file->getClientOriginalExtension();
         $request->file->move(public_path('uploads'), $attachedFileName);
@@ -481,7 +499,14 @@ class BIMSRecordController extends BaseController
 
     public function displayBIMSRecordRemoving(Organization $org)
     {   $current_user = Auth()->user();
-        $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
+
+        if (class_exists('App\Models\BeneficiaryMember')) {
+            $beneficiaryMemberOBJ = app('App\Models\BeneficiaryMember');
+        } elseif (class_exists('TETFund\AJLS\Models\BeneficiaryMember')) {
+            $beneficiaryMemberOBJ = app('TETFund\AJLS\Models\BeneficiaryMember');
+        }
+
+        $beneficiary_member = $beneficiaryMemberOBJ->where('beneficiary_user_id', $current_user->id)->first();
 
         return view('tetfund-bims-module::pages.bims_records.remove')
         ->with('current_user', $current_user)
@@ -493,7 +518,14 @@ class BIMSRecordController extends BaseController
     public function processBulkRemove(Organization $org, Request $request){
 
         $current_user = Auth()->user();
-        $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
+
+        if (class_exists('App\Models\BeneficiaryMember')) {
+            $beneficiaryMemberOBJ = app('App\Models\BeneficiaryMember');
+        } elseif (class_exists('TETFund\AJLS\Models\BeneficiaryMember')) {
+            $beneficiaryMemberOBJ = app('TETFund\AJLS\Models\BeneficiaryMember');
+        }
+
+        $beneficiary_member = $beneficiaryMemberOBJ->where('beneficiary_user_id', $current_user->id)->first();
         $bIMSRecordList = $request->bIMSRecordList;
 
         // clean up input

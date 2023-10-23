@@ -5,7 +5,6 @@ namespace TETFund\BIMSOnboarding\Console\Command;
 use Illuminate\Console\Command;
 use TETFund\BIMSOnboarding\Models\BIMSRecord;
 use TETFund\BIMSOnboarding\Jobs\PushRecordToBIMS ;
-use App\Models\Beneficiary;
 
 class BIMSRecordPusher extends Command
 {
@@ -47,8 +46,14 @@ class BIMSRecordPusher extends Command
             return 1;
         }
 
-        $beneficiaries_bims_sync = Beneficiary::where('bims_tetfund_id', '<>', null)->get();
-        $beneficiaries_bims_unsync = Beneficiary::select(
+        if (class_exists('App\Models\Beneficiary')) {
+            $beneficiaryOBJ = app('App\Models\Beneficiary');
+        } elseif (class_exists('TETFund\AJLS\Models\Beneficiary')) {
+            $beneficiaryOBJ = app('TETFund\AJLS\Models\Beneficiary');
+        }
+
+        $beneficiaries_bims_sync = $beneficiaryOBJ->where('bims_tetfund_id', '<>', null)->get();
+        $beneficiaries_bims_unsync = $beneficiaryOBJ->select(
             'id',
             'short_name', 
             'full_name', 

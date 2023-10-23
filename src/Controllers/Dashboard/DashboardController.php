@@ -2,9 +2,6 @@
 
 namespace TETFund\BIMSOnboarding\Controllers\Dashboard;
 
-use App\Models\BeneficiaryMember;
-use App\Models\Beneficiary;
-
 use TETFund\BIMSOnboarding\DataTables\BIMSRecordDataTable;
 
 use Illuminate\Support\Facades\DB;
@@ -33,7 +30,14 @@ class DashboardController extends BaseController
     public function displayBIDashboard(Organization $org, Request $request){
 
         $current_user = Auth()->user();
-        $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
+
+        if (class_exists('App\Models\BeneficiaryMember')) {
+            $beneficiaryMemberOBJ = app('App\Models\BeneficiaryMember');
+        } elseif (class_exists('TETFund\AJLS\Models\BeneficiaryMember')) {
+            $beneficiaryMemberOBJ = app('TETFund\AJLS\Models\BeneficiaryMember');
+        }
+
+        $beneficiary_member = $beneficiaryMemberOBJ->where('beneficiary_user_id', $current_user->id)->first();
 
         return view('tetfund-bims-module::dashboard.bi-dashboard')
                     ->with('organization', $org)

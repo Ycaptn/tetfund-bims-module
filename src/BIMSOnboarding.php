@@ -5,9 +5,6 @@ use Carbon;
 use Session;
 use Validator;
 
-use App\Models\Beneficiary;
-use App\Models\BeneficiaryMember;
-
 use TETFund\BIMSOnboarding\Models\BIMSRecord;
 
 use Illuminate\Support\Facades\DB;
@@ -27,8 +24,14 @@ class BIMSOnboarding
 
     public function get_bims_records_count($user_type=null, $beneficiary_id=null, $verified=null){
 
+        if (class_exists('App\Models\BeneficiaryMember')) {
+            $beneficiaryMemberOBJ = app('App\Models\BeneficiaryMember');
+        } elseif (class_exists('TETFund\AJLS\Models\BeneficiaryMember')) {
+            $beneficiaryMemberOBJ = app('TETFund\AJLS\Models\BeneficiaryMember');
+        }
+
         $current_user = Auth::user();
-        $beneficiary_member = BeneficiaryMember::where('beneficiary_user_id', $current_user->id)->first();
+        $beneficiary_member = $beneficiaryMemberOBJ->where('beneficiary_user_id', $current_user->id)->first();
 
         $query = BIMSRecord::where('deleted_at',null)->where('organization_id',$current_user->organization_id);
 
@@ -108,6 +111,16 @@ class BIMSOnboarding
                             'is-parent'=>false,
                             'children' => []
                         ];
+
+                        $fc_menu['mnu_bims_dashboard']['children']["mnu_td_bim_record_known_users_admin"] = [
+                            'id'=>'mnu_td_bim_record_known_users',
+                            'label'=>'BIMS Known Users',
+                            'icon'=>'fa fa-users',
+                            'path'=> route('bims-onboarding.bimsKnownUsers.index'),
+                            'route-selector'=>'bims-onboarding/bimsKnownUsers*',
+                            'is-parent'=>false,
+                            'children' => []
+                        ];
                     }
                 }
 
@@ -122,6 +135,8 @@ class BIMSOnboarding
             Route::put('bims_records/{bims_records}/remove_from_bims', [\TETFund\BIMSOnboarding\Controllers\API\BIMSRecordAPIController::class, 'removeFromBIMS'])->name('bims_records.remove_from_bims');
             Route::put('bims_records/{bims_records}/push_to_bims', [\TETFund\BIMSOnboarding\Controllers\API\BIMSRecordAPIController::class, 'pushToBIMS'])->name('bims_records.push_to_bims');
             Route::resource('bims_records', \TETFund\BIMSOnboarding\Controllers\API\BIMSRecordAPIController::class);
+            Route::resource('bims_known_users', \TETFund\BIMSOnboarding\Controllers\API\BIMSKnownUserAPIController::class);
+            Route::get('sync_bims_users', [\TETFund\BIMSOnboarding\Controllers\API\BIMSKnownUserAPIController::class, 'syncBimsUsers'])->name('bims_known_users.sync_bims_users');
         });
     }
 
@@ -152,6 +167,7 @@ class BIMSOnboarding
 
             Route::get('BIMSRecords/report', [\TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class, 'report'])->name('BIMSRecords.report');
             Route::resource('BIMSRecords', \TETFund\BIMSOnboarding\Controllers\Models\BIMSRecordController::class);
+            Route::resource('bimsKnownUsers', \TETFund\BIMSOnboarding\Controllers\Models\BIMSKnownUserController::class);
 
         });
     }

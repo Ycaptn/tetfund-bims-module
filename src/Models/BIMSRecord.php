@@ -196,7 +196,11 @@ class BIMSRecord extends Model
      **/
     public function beneficiary()
     {
-        return $this->belongsTo(\App\Models\Beneficiary::class, 'beneficiary_id');
+        if (class_exists('App\Models\Beneficiary')) {
+            return $this->belongsTo(\App\Models\Beneficiary::class, 'beneficiary_id');
+        } elseif (class_exists('TETFund\AJLS\Models\Beneficiary')) {
+            return $this->belongsTo(\TETFund\AJLS\Models\Beneficiary::class, 'beneficiary_id');
+        }
     }
 
     public function getEditableAttribute(){
