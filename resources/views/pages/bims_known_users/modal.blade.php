@@ -15,23 +15,23 @@
                             
                             @csrf
                             
-                            <div class="offline-flag"><span class="offline-b_i_m_s_records">You are currently offline</span></div>
+                            <div class="offline-flag"><span class="offline-bims_known_user">You are currently offline</span></div>
 
-                            <div id="spinner-b_i_m_s_records" class="spinner-border text-primary" role="status"> 
+                            <div id="spinner-bims_known_user" class="spinner-border text-primary" role="status"> 
                                 <span class="visually-hidden">Loading...</span>
                             </div>
 
                             <input type="hidden" id="txt-bimsKnownUser-primary-id" value="0" />
                             <div id="div-show-txt-bimsKnownUser-primary-id">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                    @include('tetfund-bims-module::pages.bims_records.show_fields')
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                    @include('tetfund-bims-module::pages.bims_known_users.show_fields')
                                     </div>
                                 </div>
                             </div>
                             <div id="div-edit-txt-bimsKnownUser-primary-id">
                                 <div class="row">
-                                    @include('tetfund-bims-module::pages.bims_records.fields')
+                                    @include('tetfund-bims-module::pages.bims_known_users.fields')
                                 </div>
                             </div>
 
@@ -40,9 +40,9 @@
                 </form>
             </div>
 
-            {{-- <div class="modal-footer" id="div-save-mdl-bimsKnownUser-modal">
-                <button type="button" class="btn btn-primary" id="btn-save-mdl-bimsKnownUser-modal" value="add">Save</button>
-            </div> --}}
+            <div class="modal-footer" id="div-save-mdl-bimsKnownUser-modal">
+                {{-- <button type="button" class="btn btn-primary" id="btn-save-mdl-bimsKnownUser-modal" value="add">Save</button> --}}
+            </div>
 
         </div>
     </div>
@@ -75,7 +75,7 @@ $(document).ready(function() {
         $('#frm-bimsKnownUser-modal').trigger("reset");
 
         $("#spinner-bims_known_user").show();
-        $("#div-save-mdl-bimsKnownUser-modal").attr('disabled', true);
+        $("#btn-save-mdl-bimsKnownUser-modal").attr('disabled', true);
 
         $('#div-show-txt-bimsKnownUser-primary-id').show();
         $('#div-edit-txt-bimsKnownUser-primary-id').hide();
@@ -84,15 +84,19 @@ $(document).ready(function() {
         $.get( "{{ route('bims-onboarding-api.bims_known_users.show','') }}/"+itemId).done(function( response ) {
             
             $('#txt-bimsKnownUser-primary-id').val(response.data.id);
-            $('#spn_bimsKnownUser_first_name_verified').html(response.data.first_name_verified);
-            $('#spn_bimsKnownUser_middle_name_verified').html(response.data.middle_name_verified);
-            $('#spn_bimsKnownUser_last_name_verified').html(response.data.last_name_verified);
-            $('#spn_bimsKnownUser_name_title_verified').html(response.data.name_title_verified);
-            $('#spn_bimsKnownUser_name_suffix_verified').html(response.data.name_suffix_verified);
+            $('#spn_bIMSKnownUser_first_name').text(response.data.first_name);
+            $('#spn_bIMSKnownUser_middle_name').text(response.data.middle_name);
+            $('#spn_bIMSKnownUser_last_name').text(response.data.last_name);
+            $('#spn_bIMSKnownUser_email').text(response.data.email);
+            $('#spn_bIMSKnownUser_gender').text(response.data.gender ?? 'N/A');
+            $('#spn_bIMSKnownUser_dob').text(response.data.dob ?? 'N/A');
+
+            let institution_obj = JSON.parse(response.data.institution_meta_data);
+            $('#spn_bIMSKnownUser_institution').text((institution_obj!=null && institution_obj.name.length>0) ? institution_obj.name : 'N/A');
 
 
             $("#spinner-bims_known_user").hide();
-            $("#div-save-mdl-bimsKnownUser-modal").attr('disabled', false);
+            $("#btn-save-mdl-bimsKnownUser-modal").attr('disabled', false);
         });
     });
 
@@ -152,9 +156,10 @@ $(document).ready(function() {
                             console.log(result.errors)
                             swal("Error", "Oops an error occurred. Please try again.", "error");
                         }else{
+                            console.log();
                             swal({
                                 title: "Synchronized",
-                                text: "BIMS users synchronized successfully",
+                                text: result.data.count_bims_users + ' ' + result.message,
                                 type: "success",
                                 confirmButtonClass: "btn-success",
                                 confirmButtonText: "OK",
