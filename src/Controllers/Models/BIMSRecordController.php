@@ -235,14 +235,16 @@ class BIMSRecordController extends BaseController
                     }
                 }
 
-                $first_name = trim($data[0]);
-                $middle_name = trim($data[1]);
-                $last_name = trim($data[2]);
-                $email = strtolower(trim($data[3]));
-                $phone = trim($data[4]);
+                $first_name = trim($data[0] ?? null);
+                $middle_name = trim($data[1] ?? null);
+                $last_name = trim($data[2] ?? null);
+                $email = strtolower(trim($data[3]) ?? null);
+                $phone = trim($data[4] ?? null);
                 
-                $staff_code = trim($data[5]);
-                $matric_code = trim($data[5]);
+                $staff_code = trim($data[5] ?? null);
+                $matric_code = trim($data[5] ?? null);
+
+                
 
                 $csv_headings = ["First Name", "Middle Name", 'Last Name', 'Email Address', 'Phone Number', 'Matric Code', 'Staff Code'];
 
