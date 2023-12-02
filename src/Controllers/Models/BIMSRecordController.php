@@ -197,6 +197,11 @@ class BIMSRecordController extends BaseController
 
         $current_user = Auth()->user();
 
+        return $this->sendError(
+            [], 
+            "Bulk upload temporarily disabled for maintenance"
+        );
+
         if (class_exists('App\Models\BeneficiaryMember')) {
             $beneficiaryMemberOBJ = app('App\Models\BeneficiaryMember');
         } elseif (class_exists('TETFund\AJLS\Models\BeneficiaryMember')) {
