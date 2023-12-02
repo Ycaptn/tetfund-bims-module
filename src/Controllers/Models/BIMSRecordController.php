@@ -363,7 +363,7 @@ class BIMSRecordController extends BaseController
                             'user_type' => $request->user_type,
                         ]);
                         
-                        BIMSRecordCreated::dispatch($bims_record);
+                        // BIMSRecordCreated::dispatch($bims_record);
                         $created_records_counter++;
 
                     } catch (\Throwable $th) {
